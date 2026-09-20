@@ -1613,9 +1613,9 @@ function buildPrintable(){
 }
 
 const KINDS = {
-  data:{label:'Data file (.txt)', desc:'Everything on your sheet plus your look settings, saved as a plain text file. Load it back any time, on any device, with Choose a file below.', build:buildJSON, file:() => slug() + '.txt'},
-  sheet:{label:'Printable sheet', desc:'A clean sheet with every number worked out. Open the downloaded file in a browser, then print it or save it as a PDF.', build:buildPrintable, file:() => slug() + '-sheet.html'},
-  text:{label:'Text summary (.txt)', desc:'A readable summary you can paste into notes, a chat, or a wiki. To reload your sheet later, use the data file instead.', build:buildMarkdown, file:() => slug() + '-summary.txt'}
+  data:{label:'Data file (.txt)', desc:'Everything on your sheet plus your look settings, saved as a plain text file. Load it back any time, on any device, with Choose a file below.', build:buildJSON, file:() => slug() + '.txt', mime:'text/plain'},
+  sheet:{label:'Printable sheet', desc:'A clean sheet with every number worked out. Open the downloaded file in a browser, then print it or save it as a PDF.', build:buildPrintable, file:() => slug() + '-sheet.html', mime:'text/html'},
+  text:{label:'Text summary (.txt)', desc:'A readable summary you can paste into notes, a chat, or a wiki. To reload your sheet later, use the data file instead.', build:buildMarkdown, file:() => slug() + '-summary.txt', mime:'text/plain'}
 };
 let expKind = 'data';
 let DL = null;
@@ -1626,23 +1626,40 @@ function renderExport(){
   $('#expDesc').textContent = k.desc;
   $('#exportText').value = k.build();
   $$('#expKinds button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === expKind)));
-  $('#expDownload').disabled = !DL;
-  dlgSay(DL ? '' : 'Downloads are not available in this view. Use Copy instead.');
+  $('#expDownload').disabled = false;
+  dlgSay('');
 }
 async function copyText(text, ta){
   try { await navigator.clipboard.writeText(text); return true; } catch(e) {}
   try { ta.focus(); ta.select(); return document.execCommand('copy'); } catch(e) { return false; }
 }
-async function doDownload(){
-  if (!DL) return;
-  const k = KINDS[expKind], name = k.file();
+function browserDownload(filename, data, mime){
   try {
-    await DL.save({filename:name, data:k.build()});
-    dlgSay('Saved ' + name + '.');
-  } catch(e) {
-    if (e && e.code === 'declined') dlgSay('Download cancelled.');
-    else dlgSay('The download did not go through. Try Copy instead.');
+    const blob = new Blob([data], {type:(mime || 'text/plain') + ';charset=utf-8'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = filename; a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+    return true;
+  } catch(e) { return false; }
+}
+async function doDownload(){
+  const k = KINDS[expKind], name = k.file();
+  if (DL){
+    try {
+      await DL.save({filename:name, data:k.build()});
+      dlgSay('Saved ' + name + '.');
+      return;
+    } catch(e) {
+      if (e && e.code === 'declined'){ dlgSay('Download cancelled.'); return; }
+      /* fall through and try a plain browser download instead */
+    }
   }
+  if (browserDownload(name, k.build(), k.mime)) dlgSay('Downloaded ' + name + '.');
+  else dlgSay('The download did not go through. Try Copy instead.');
 }
 function doPrint(){
   closeDlg($('#exportDlg'));
