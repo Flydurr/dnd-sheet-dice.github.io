@@ -185,6 +185,12 @@ button.pill[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
 .slot-head input{width:2.6rem;text-align:center}
 .slot-pips{display:flex;flex-wrap:wrap;gap:10px;min-height:22px}
 .slot-count{font-size:.76rem;color:var(--ink-soft)}
+.spell-row{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;padding:9px 0;border-bottom:1px dotted var(--line)}
+.spell-row:first-child{padding-top:0}
+.spell-row .spell-name{flex:1 1 160px;min-width:0;font:600 1.02rem var(--sans)}
+.spell-row .spell-lvl{width:8rem}
+.spell-chk{display:flex;align-items:center;gap:6px;font-size:.85rem;color:var(--ink-soft)}
+.spell-chk input{width:20px;height:20px;accent-color:var(--ink)}
 
 /* Rolls lists */
 .rolls{list-style:none;margin:0;padding:0;columns:240px 2;column-gap:34px}
@@ -502,6 +508,9 @@ legend{padding:0;margin-bottom:8px;font:italic 500 1.15rem var(--serif)}
             <div class="stat"><span>Spell attack</span><button type="button" class="btn small" id="spellAtk">–</button></div>
           </div>
           <div class="slots" id="slots"></div>
+          <p class="hint" style="margin-top:18px">Your spells</p>
+          <div id="spellsList"></div>
+          <button type="button" class="btn small add-row" id="addSpell">Add spell</button>
         </div>
       </section>
 
@@ -711,7 +720,7 @@ function defaults(){
     ac:10, initBonus:0, speed:30,
     hp:{cur:10, max:10, temp:0}, hitDice:'', death:{s:0, f:0},
     attacks:[{name:'', ability:'str', prof:true, bonus:0, dmg:''}],
-    spellAbility:'', slots,
+    spellAbility:'', slots, spells:[],
     currency:{cp:0, sp:0, ep:0, gp:0, pp:0},
     features:'', gear:''
   };
@@ -731,6 +740,8 @@ function normalize(obj){
   const s = merge(defaults(), patch);
   s.attacks = s.attacks.filter(a => a && typeof a === 'object')
     .map(a => Object.assign({name:'', ability:'str', prof:true, bonus:0, dmg:''}, a));
+  s.spells = (Array.isArray(s.spells) ? s.spells : []).filter(sp => sp && typeof sp === 'object')
+    .map(sp => Object.assign({name:'', level:0, prepared:false}, sp));
   return s;
 }
 let S = defaults();
@@ -1221,6 +1232,28 @@ function renderSlotPips(lv){
 }
 function renderSlots(){ for (let lv = 1; lv <= 9; lv++) renderSlotPips(lv); }
 
+function renderSpells(){
+  const box = $('#spellsList'); box.textContent = '';
+  if (!S.spells.length){
+    box.append(h('p', {class:'empty'}, 'No spells yet. Add one you know or have prepared.'));
+    return;
+  }
+  S.spells.forEach((sp, i) => {
+    const nameIn = h('input', {class:'line spell-name', type:'text', placeholder:'Fireball', value:sp.name, 'aria-label':'Spell name', autocomplete:'off',
+      oninput:e => { sp.name = e.target.value; save(); }});
+    const lvlSel = h('select', {class:'line spell-lvl', 'aria-label':'Spell level',
+      onchange:e => { sp.level = num(e.target.value); save(); }},
+      h('option', {value:0}, 'Cantrip'),
+      ...[1,2,3,4,5,6,7,8,9].map(n => h('option', {value:n}, ORD[n] + ' level')));
+    lvlSel.value = sp.level;
+    const chk = h('input', {type:'checkbox', checked:!!sp.prepared, 'aria-label':(sp.name || 'Spell') + ' prepared',
+      onchange:e => { sp.prepared = e.target.checked; save(); }});
+    const remove = h('button', {class:'btn small', type:'button', 'aria-label':'Remove ' + (sp.name || 'this spell'),
+      onclick:() => { S.spells.splice(i, 1); renderSpells(); save(); }}, 'Remove');
+    box.append(h('div', {class:'spell-row'}, nameIn, lvlSel, h('label', {class:'spell-chk'}, chk, 'Prepared'), remove));
+  });
+}
+
 /* ---------- vitals actions ---------- */
 function damage(n){
   n = Math.max(0, n);
@@ -1515,6 +1548,11 @@ function buildMarkdown(){
     }
     L.push(...slotLines);
   }
+  if (S.spells.length){
+    L.push('');
+    L.push('## Spells');
+    S.spells.forEach(sp => L.push('- ' + (sp.name || 'Spell') + ' (' + (sp.level ? ORD[sp.level] + ' level' : 'Cantrip') + ')' + (sp.prepared ? ' — prepared' : '')));
+  }
   if (S.features.trim()){ L.push(''); L.push('## Features and traits'); L.push(S.features.trim()); }
   if (S.gear.trim()){ L.push(''); L.push('## Equipment and notes'); L.push(S.gear.trim()); }
   const coins = ['pp', 'gp', 'ep', 'sp', 'cp'].filter(k => S.currency[k]).map(k => S.currency[k] + ' ' + k);
@@ -1541,6 +1579,10 @@ function buildPrintable(){
     let head = '';
     if (S.spellAbility){ const m = num(S.mods[S.spellAbility]); head = '<p>Ability ' + S.spellAbility.toUpperCase() + '. Save DC <b>' + (8 + p + m) + '</b>. Attack <b>' + fmt(p + m) + '</b>.</p>'; }
     spell = '<h2>Spellcasting</h2>' + head + slotBits.join('');
+  }
+  const ORDW = ['Cantrip','1st level','2nd level','3rd level','4th level','5th level','6th level','7th level','8th level','9th level'];
+  if (S.spells.length){
+    spell += '<h2>Spells</h2><ul>' + S.spells.map(sp => '<li><b>' + esc(sp.name || 'Spell') + '</b> &nbsp;<i>' + ORDW[sp.level || 0] + (sp.prepared ? ', prepared' : '') + '</i></li>').join('') + '</ul>';
   }
   const coins = ['pp', 'gp', 'ep', 'sp', 'cp'].filter(k => S.currency[k]).map(k => esc(S.currency[k]) + ' ' + k).join(', ');
   const css = 'body{font:14px/1.45 Georgia,"Times New Roman",serif;color:#111;margin:24px auto;max-width:860px;padding:0 16px}' +
@@ -1610,7 +1652,7 @@ function doPrint(){
 }
 function replaceState(next){
   S = next;
-  syncInputs(); renderAttacks(); renderDeath(); renderSlots(); update(); save();
+  syncInputs(); renderAttacks(); renderSpells(); renderDeath(); renderSlots(); update(); save();
 }
 function applyImport(text){
   const obj = JSON.parse(String(text).replace(/^\uFEFF/, '').trim());
@@ -1706,6 +1748,7 @@ bindInputs();
 renderAttacks();
 renderDeath();
 renderSlots();
+renderSpells();
 buildTray();
 initSections();
 buildCustomize();
@@ -1742,6 +1785,11 @@ $('#addAtk').addEventListener('click', () => {
   S.attacks.push({name:'', ability:'str', prof:true, bonus:0, dmg:''});
   renderAttacks(); update(); save();
   const inputs = $$('.atk-name'); if (inputs.length) inputs[inputs.length - 1].focus();
+});
+$('#addSpell').addEventListener('click', () => {
+  S.spells.push({name:'', level:0, prepared:false});
+  renderSpells(); save();
+  const inputs = $$('.spell-name'); if (inputs.length) inputs[inputs.length - 1].focus();
 });
 $$('.seg [data-mode]').forEach(b => b.addEventListener('click', () => setMode(b.dataset.mode)));
 $('#modeCycle').addEventListener('click', () => setMode(MODE_ORDER[(MODE_ORDER.indexOf(MODE) + 1) % 3]));
