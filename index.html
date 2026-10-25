@@ -460,6 +460,19 @@ html[data-paper="image"] body{background-image:linear-gradient(var(--bg-veil),va
 .c-colors input{width:100%;height:42px;padding:2px;border:2px solid var(--ink);border-radius:4px;background:transparent;cursor:pointer}
 .c-range{margin-top:10px}
 #cNew:disabled,#bgDel:disabled{opacity:.45}
+.c-range b{font-weight:600;color:var(--ink);margin-left:6px}
+.dot-prev{width:100%;height:96px;display:block;border:2px solid var(--ink);border-radius:6px;background:var(--paper);margin-top:10px;touch-action:none}
+
+/* cursor-reactive dots */
+#dotField{display:none;position:fixed;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none}
+html[data-paper="dots"] #dotField{display:block}
+html[data-paper="dots"] body{background-image:none}
+@media print{#dotField{display:none !important}}
+
+/* party room shows your own page background */
+html .dm{background:transparent}
+html.dm-open{overflow:hidden}
+html.dm-open body>*:not(#dm):not(#dmSheet):not(#dotField){visibility:hidden}
 </style>
 </head>
 <body>
@@ -699,7 +712,7 @@ html[data-paper="image"] body{background-image:linear-gradient(var(--bg-veil),va
         <label>Name<input type="text" id="cName" maxlength="20"></label>
         <div class="c-colors"><label>Page<input type="color" id="cPaper"></label><label>Cards<input type="color" id="cSheet"></label><label>Text<input type="color" id="cInk"></label><label>Dice tray<input type="color" id="cTray"></label></div>
         <div class="opts"><button type="button" id="cDel">Delete this theme</button></div>
-        <p class="hint" style="margin:0">Custom themes look the same in light and dark mode.</p>
+        <p class="hint" style="margin:0">Custom themes look the same in light and dark mode. Dice text uses the Text color. Pick this theme\u2019s background in the Background section below.</p>
       </div></fieldset>
     <fieldset><legend>Accent color</legend><div class="acc-row" id="c-acc"></div><p class="hint" style="margin:8px 0 0">The rainbow circle picks any color.</p></fieldset>
     <fieldset><legend>Background</legend><div class="opts" id="c-paper"></div>
@@ -708,6 +721,12 @@ html[data-paper="image"] body{background-image:linear-gradient(var(--bg-veil),va
         <input type="file" id="bgFile" accept="image/*" hidden>
         <label class="c-range">Soften picture<input type="range" id="bgDim" min="0" max="85" step="5"></label>
         <p class="hint" style="margin:6px 0 0">Cards stay solid so text is easy to read. The picture is kept on this device only.</p>
+      </div>
+      <div id="c-dots" hidden style="margin-top:10px">
+        <label class="c-range">Dot size near the cursor <b id="dotSizeV"></b><input type="range" id="dotSize" min="0" max="100" step="5"></label>
+        <label class="c-range">How far it reaches <b id="dotReachV"></b><input type="range" id="dotReach" min="60" max="400" step="10"></label>
+        <canvas id="dotPrev" class="dot-prev" aria-hidden="true"></canvas>
+        <p class="hint" style="margin:6px 0 0">Move over the preview to try it. 100% is the largest size.</p>
       </div></fieldset>
     <fieldset><legend>Lettering</legend><div class="opts" id="c-font"></div></fieldset>
     <fieldset><legend>Text size</legend><div class="opts" id="c-size"></div></fieldset>
@@ -883,7 +902,7 @@ function uiDefaults(){
   return {mode:'auto', palette:'blueprint', accent:'ruby', paper:'graph', font:'storybook', size:'m', density:'comfortable',
     hide:{attacks:false, spells:false, saves:false, skills:false, notes:false, death:false},
     collapsed:{}, animate:true, sound:false, vibrate:false, autoReset:false,
-    customThemes:[], accentColor:'#B0243B', bgDim:55};
+    customThemes:[], accentColor:'#B0243B', bgDim:55, dotSize:100, dotReach:170};
 }
 function normalizeUI(obj){
   const u = merge(uiDefaults(), obj);
@@ -891,9 +910,11 @@ function normalizeUI(obj){
   const hexOK = v => typeof v === 'string' && /^#[0-9a-fA-F]{6}$/.test(v);
   u.customThemes = (obj && Array.isArray(obj.customThemes) ? obj.customThemes : [])
     .filter(c => c && typeof c.id === 'string' && /^[a-z0-9]{1,12}$/.test(c.id) && hexOK(c.paper) && hexOK(c.sheet) && hexOK(c.ink) && hexOK(c.tray))
-    .slice(0, 8).map(c => ({id:c.id, name:String(c.name || 'My theme').slice(0, 20), paper:c.paper, sheet:c.sheet, ink:c.ink, tray:c.tray}));
+    .slice(0, 8).map(c => ({id:c.id, name:String(c.name || 'My theme').slice(0, 20), paper:c.paper, sheet:c.sheet, ink:c.ink, tray:c.tray,
+      bg:['graph','dots','plain','image'].includes(c.bg) ? c.bg : (['graph','dots','plain'].includes(u.paper) ? u.paper : 'graph')}));
   if (!hexOK(u.accentColor)) u.accentColor = '#B0243B';
   u.bgDim = clamp(num(u.bgDim), 0, 85);
+  u.dotSize = clamp(num(u.dotSize), 0, 100); u.dotReach = clamp(num(u.dotReach), 60, 400);
   if (!['graph','dots','plain','image'].includes(u.paper)) u.paper = 'graph';
   if (!PALETTES[u.palette] && !u.customThemes.some(c => 'c:' + c.id === u.palette)) u.palette = 'blueprint';
   if (!ACCENTS[u.accent] && u.accent !== 'custom') u.accent = 'ruby';
@@ -921,17 +942,27 @@ function isDark(){
   return !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
 }
 const BG_KEY = 'dnd-character-sheet-bg-v1';
-let BG = '';
-try { const b = localStorage.getItem(BG_KEY) || ''; if (/^data:image\/jpeg;base64,[A-Za-z0-9+\/=]+$/.test(b)) BG = b; } catch(e) {}
+const BGS = {};
+const bgKey = id => id ? BG_KEY + '-' + id : BG_KEY;
+function getBg(id){
+  if (!(id in BGS)){
+    let b = ''; try { b = localStorage.getItem(bgKey(id)) || ''; } catch(e) {}
+    BGS[id] = /^data:image\/jpeg;base64,[A-Za-z0-9+\/=]+$/.test(b) ? b : '';
+  }
+  return BGS[id];
+}
+function putBg(id, d){
+  BGS[id] = d;
+  try { if (d) localStorage.setItem(bgKey(id), d); else localStorage.removeItem(bgKey(id)); return true; } catch(e) { return false; }
+}
 const hex2rgb = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
 const lum = h => { const [r, g, b] = hex2rgb(h).map(x => { x /= 255; return x <= .03928 ? x / 12.92 : Math.pow((x + .055) / 1.055, 2.4); }); return .2126 * r + .7152 * g + .0722 * b; };
 const mixHex = (a, b, t) => { const A = hex2rgb(a), B = hex2rgb(b); return '#' + A.map((x, i) => Math.round(x * (1 - t) + B[i] * t).toString(16).padStart(2, '0')).join(''); };
 const customById = id => (typeof id === 'string' && id.startsWith('c:')) ? UI.customThemes.find(c => 'c:' + c.id === id) : null;
 function customToTheme(c){
   const [r, g, b] = hex2rgb(c.ink), a = x => 'rgba(' + r + ',' + g + ',' + b + ',' + x + ')';
-  const trayFg = lum(c.tray) < .4 ? '#F4F4F4' : '#14161A', [tr, tg, tb] = hex2rgb(trayFg);
   return {paper:c.paper, grid:a(.09), sheet:c.sheet, ink:c.ink, soft:mixHex(c.ink, c.sheet, .38), line:a(.3), hover:a(.07),
-    tray:c.tray, trayFg, traySoft:mixHex(trayFg, c.tray, .35), trayLine:'rgba(' + tr + ',' + tg + ',' + tb + ',.25)'};
+    tray:c.tray, trayFg:c.ink, traySoft:mixHex(c.ink, c.tray, .35), trayLine:a(.25)};
 }
 async function shrinkImage(file){
   if (!file.type.startsWith('image/')) throw new Error('type');
@@ -953,12 +984,14 @@ function applyAppearance(){
   const pal = PALETTES[UI.palette] || PALETTES.blueprint;
   const t = cp ? customToTheme(cp) : (dark ? pal.d : pal.l);
   const cu = UI.accent === 'custom';
+  const bgd = getBg(cp ? cp.id : '');
   const ac = ACCENTS[UI.accent] || ACCENTS.ruby;
   const accHex = cu ? UI.accentColor : (dark ? ac.d : ac.l);
   const onAcc = cu ? (lum(accHex) < .4 ? '#FFFFFF' : '#101828') : (dark ? '#0D182B' : '#FFFFFF');
   const [pr, pg, pb2] = hex2rgb(t.paper);
   const v = {
-    '--bg-image':BG ? 'url("' + BG + '")' : 'linear-gradient(transparent,transparent)',
+    '--dot-grow':String(clamp(num(UI.dotSize), 0, 100) / 100), '--dot-reach':String(clamp(num(UI.dotReach), 60, 400)),
+    '--bg-image':bgd ? 'url("' + bgd + '")' : 'linear-gradient(transparent,transparent)',
     '--bg-veil':'rgba(' + pr + ',' + pg + ',' + pb2 + ',' + (clamp(num(UI.bgDim), 0, 85) / 100) + ')',
     '--paper':t.paper, '--grid':t.grid, '--sheet':t.sheet, '--ink':t.ink, '--ink-soft':t.soft, '--line':t.line, '--hover':t.hover,
     '--tray-bg':t.tray, '--tray-fg':t.trayFg, '--tray-soft':t.traySoft, '--tray-line':t.trayLine,
@@ -971,7 +1004,7 @@ function applyAppearance(){
   const root = document.documentElement;
   for (const k in v) root.style.setProperty(k, v[k]);
   root.style.colorScheme = dark ? 'dark' : 'light';
-  root.dataset.paper = UI.paper; root.dataset.font = UI.font; root.dataset.density = UI.density;
+  root.dataset.paper = cp ? cp.bg : UI.paper; root.dataset.font = UI.font; root.dataset.density = UI.density;
   updateSwatches();
 }
 function applyHide(){
@@ -1571,7 +1604,6 @@ function checkRow(container, label, help, get, set){
 }
 function buildCustomize(){
   optionRow($('#c-mode'), [['auto','Match device'],['light','Light'],['dark','Dark']], 'mode');
-  optionRow($('#c-paper'), [['graph','Graph paper'],['dots','Dots'],['plain','Plain'],['image','Picture']], 'paper');
   optionRow($('#c-font'), Object.keys(FONTS).map(k => [k, FONTS[k].name, FONTS[k].serif]), 'font');
   optionRow($('#c-size'), [['s','Small'],['m','Default'],['l','Large'],['xl','Extra large']], 'size');
   optionRow($('#c-density'), [['comfortable','Comfortable'],['compact','Compact']], 'density');
@@ -1610,6 +1642,13 @@ function buildCustomize(){
   syncers.push(() => { const on = UI.accent === 'custom'; cl.classList.toggle('on', on); cl.style.background = on ? UI.accentColor : ''; if (document.activeElement !== ci) ci.value = UI.accentColor; });
 
   const cpal = $('#c-cpal'), ced = $('#c-edit'), cur = () => customById(UI.palette);
+  const pc = $('#c-paper');
+  [['graph','Blueprint grid'],['dots','Dots'],['plain','Blank'],['image','Picture']].forEach(([v, label]) => pc.append(h('button', {type:'button', 'data-v':v, 'aria-pressed':'false', onclick:() => {
+    const c = cur(); if (c) c.bg = v; else UI.paper = v;
+    afterUI();
+    if (v === 'image' && !getBg(c ? c.id : '')) $('#bgFile').click();
+  }}, label)));
+  syncers.push(() => { const c = cur(), p = c ? c.bg : UI.paper; $$('button', pc).forEach(b => b.setAttribute('aria-pressed', String(p === b.dataset.v))); });
   let delArm = false;
   syncers.push(() => {
     cpal.textContent = '';
@@ -1630,28 +1669,44 @@ function buildCustomize(){
     if (UI.customThemes.length >= 8) return;
     const dark = isDark(), p = PALETTES[UI.palette], base = cur() || (p ? (dark ? p.d : p.l) : PALETTES.blueprint.l);
     const id = Math.random().toString(36).slice(2, 8);
-    UI.customThemes.push({id, name:'My theme ' + (UI.customThemes.length + 1), paper:base.paper, sheet:base.sheet, ink:base.ink, tray:base.tray});
+    UI.customThemes.push({id, name:'My theme ' + (UI.customThemes.length + 1), paper:base.paper, sheet:base.sheet, ink:base.ink, tray:base.tray,
+      bg:['graph','dots','plain'].includes(cur() ? cur().bg : UI.paper) ? (cur() ? cur().bg : UI.paper) : 'graph'});
     UI.palette = 'c:' + id; afterUI();
   });
   $('#cDel').addEventListener('click', () => {
     const c = cur(); if (!c) return;
     if (!delArm){ delArm = true; $('#cDel').textContent = 'Tap again to delete'; return; }
-    UI.customThemes = UI.customThemes.filter(x => x !== c); UI.palette = 'blueprint'; afterUI();
+    UI.customThemes = UI.customThemes.filter(x => x !== c); putBg(c.id, ''); UI.palette = 'blueprint'; afterUI();
   });
 
   const bgBox = $('#c-bgimg'), bgDim = $('#bgDim');
-  syncers.push(() => { bgBox.hidden = UI.paper !== 'image'; if (document.activeElement !== bgDim) bgDim.value = UI.bgDim; $('#bgDel').disabled = !BG; });
+  syncers.push(() => { const c = cur(); bgBox.hidden = (c ? c.bg : UI.paper) !== 'image'; if (document.activeElement !== bgDim) bgDim.value = UI.bgDim; $('#bgDel').disabled = !getBg(c ? c.id : ''); });
   $('#bgUp').addEventListener('click', () => $('#bgFile').click());
   $('#bgFile').addEventListener('change', async e => {
     const f = e.target.files[0]; e.target.value = ''; if (!f) return;
     try {
-      BG = await shrinkImage(f); UI.paper = 'image';
-      try { localStorage.setItem(BG_KEY, BG); } catch(err) { say('The picture is too big to keep after you close the page.'); }
+      const c = cur(), d = await shrinkImage(f);
+      if (!putBg(c ? c.id : '', d)) say('The picture is too big to keep after you close the page.');
+      if (c) c.bg = 'image'; else UI.paper = 'image';
       afterUI();
     } catch(err) { say('Couldn\u2019t use that picture.'); }
   });
-  $('#bgDel').addEventListener('click', () => { BG = ''; try { localStorage.removeItem(BG_KEY); } catch(e) {} if (UI.paper === 'image') UI.paper = 'graph'; afterUI(); });
+  $('#bgDel').addEventListener('click', () => {
+    const c = cur(); putBg(c ? c.id : '', '');
+    if (c){ if (c.bg === 'image') c.bg = 'graph'; } else if (UI.paper === 'image') UI.paper = 'graph';
+    afterUI();
+  });
   bgDim.addEventListener('input', e => { UI.bgDim = parseInt(e.target.value, 10) || 0; afterUI(); });
+
+  const dotBox = $('#c-dots'), dSize = $('#dotSize'), dReach = $('#dotReach');
+  syncers.push(() => {
+    const c = cur(); dotBox.hidden = (c ? c.bg : UI.paper) !== 'dots';
+    if (document.activeElement !== dSize) dSize.value = UI.dotSize;
+    if (document.activeElement !== dReach) dReach.value = UI.dotReach;
+    $('#dotSizeV').textContent = UI.dotSize + '%'; $('#dotReachV').textContent = UI.dotReach + ' px';
+  });
+  dSize.addEventListener('input', e => { UI.dotSize = clamp(parseInt(e.target.value, 10) || 0, 0, 100); afterUI(); });
+  dReach.addEventListener('input', e => { UI.dotReach = clamp(parseInt(e.target.value, 10) || 170, 60, 400); afterUI(); });
 
   HIDEABLE.forEach(([k, label]) => checkRow($('#c-hide'), label, null, () => !UI.hide[k], v => { UI.hide[k] = !v; }));
   checkRow($('#c-roll'), 'Animate the result', 'The number tumbles before it settles.', () => UI.animate, v => { UI.animate = v; });
@@ -2344,8 +2399,9 @@ function newCode(){const a=new Uint32Array(1);crypto.getRandomValues(a);return S
 const g=$('#dmGrid');
 g.addEventListener('pointerdown',e=>{const c=e.target.closest('.dm-c');if(c)act(+c.dataset.i)});
 g.addEventListener('pointerover',e=>{if(e.buttons&1&&role==='dm'&&e.pointerType==='mouse'&&tool!=='mon'){const c=e.target.closest('.dm-c');if(c)act(+c.dataset.i)}});
-$('#roomBtn').addEventListener('click',()=>{$('#dm').hidden=false;window.scrollTo(0,0)});
-$('#dmClose').addEventListener('click',()=>{$('#dm').hidden=true});
+function setOpen(v){$('#dm').hidden=!v;document.documentElement.classList.toggle('dm-open',v)}
+$('#roomBtn').addEventListener('click',()=>{setOpen(true);window.scrollTo(0,0)});
+$('#dmClose').addEventListener('click',()=>setOpen(false));
 $('#dmLeave').addEventListener('click',leave);
 $('#dmHost').addEventListener('click',()=>enter(newCode(),'dm'));
 $('#dmJoin').addEventListener('click',()=>{const c=$('#dmJoinCode').value.replace(/\D/g,'');if(c.length!==6){say('Enter the 6-digit code.');return}enter(c,'player')});
@@ -2368,11 +2424,72 @@ $('#dmSlDel').addEventListener('click',()=>{
 $('#dmSlExp').addEventListener('click',()=>download('dungeon-slides.json',JSON.stringify({app:'dnd-dm-slides',version:1,slides:deck.slides})));
 $('#dmSlImp').addEventListener('click',()=>$('#dmSlFile').click());
 $('#dmSlFile').addEventListener('change',e=>{const f=e.target.files[0];e.target.value='';if(f)f.text().then(importSlides)});
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(!$('#dmSheet').hidden)$('#dmSheet').hidden=true;else if(!$('#dm').hidden)$('#dm').hidden=true}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(!$('#dmSheet').hidden)$('#dmSheet').hidden=true;else if(!$('#dm').hidden)setOpen(false)}});
 const hook=()=>{const b=window.__sheetBridge;if(!b){setTimeout(hook,200);return}b.onRoll=res=>{
   if(!room)return;const S=b.sheet();
   room.emit('roll',{n:String(S.name||'Adventurer').slice(0,24),l:String(res.label||'Roll').slice(0,40),t:res.total,tag:res.tag||''}).catch(()=>{});
 }};hook();
+})();
+</script>
+<script>
+(function(){
+  const root=document.documentElement,SP=24,R0=1.2,R1=5.6;
+  const cv=document.createElement('canvas');cv.id='dotField';cv.setAttribute('aria-hidden','true');
+  document.body.prepend(cv);
+  const ctx=cv.getContext('2d'),pv=document.getElementById('dotPrev'),pctx=pv?pv.getContext('2d'):null;
+  const calm=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)');
+  let w=0,h=0,mx=-9999,my=-9999,tx=-9999,ty=-9999,k=0,tk=0,raf=0,px=-1,py=-1;
+  const on=()=>root.dataset.paper==='dots';
+  const cssNum=(cs,n,d)=>{const v=parseFloat(cs.getPropertyValue(n));return isNaN(v)?d:v};
+  function paint(c,W,H,x0,y0,kk){
+    const cs=getComputedStyle(root),grow=cssNum(cs,'--dot-grow',1),reach=cssNum(cs,'--dot-reach',170);
+    c.clearRect(0,0,W,H);
+    c.fillStyle=cs.getPropertyValue('--line').trim()||'rgba(0,0,0,.3)';
+    c.beginPath();
+    for(let y=SP/2;y<H+SP;y+=SP)for(let x=SP/2;x<W+SP;x+=SP){
+      let r=R0;
+      if(kk>.001){const dx=x-x0,dy=y-y0,d=Math.sqrt(dx*dx+dy*dy);if(d<reach){const f=1-d/reach;r+=(R1-R0)*grow*f*f*(3-2*f)*kk}}
+      c.moveTo(x+r,y);c.arc(x,y,r,0,6.2832);
+    }
+    c.fill();
+  }
+  function size(){
+    const d=Math.min(window.devicePixelRatio||1,2);w=window.innerWidth;h=window.innerHeight;
+    cv.width=Math.round(w*d);cv.height=Math.round(h*d);ctx.setTransform(d,0,0,d,0,0);
+  }
+  function drawPrev(){
+    if(!pctx||!pv.clientWidth)return;
+    const d=Math.min(window.devicePixelRatio||1,2),W=pv.clientWidth,H=pv.clientHeight;
+    if(pv.width!==Math.round(W*d)||pv.height!==Math.round(H*d)){pv.width=Math.round(W*d);pv.height=Math.round(H*d)}
+    pctx.setTransform(d,0,0,d,0,0);
+    paint(pctx,W,H,px<0?W/2:px,py<0?H/2:py,1);
+  }
+  function draw(){if(on())paint(ctx,w,h,mx,my,k);drawPrev()}
+  function frame(){
+    raf=0;
+    mx+=(tx-mx)*.28;my+=(ty-my)*.28;k+=(tk-k)*.16;
+    draw();
+    if(Math.abs(tx-mx)>.5||Math.abs(ty-my)>.5||Math.abs(tk-k)>.004)raf=requestAnimationFrame(frame);
+  }
+  const kick=()=>{if(!raf)raf=requestAnimationFrame(frame)};
+  window.addEventListener('pointermove',e=>{
+    if(!on()||(calm&&calm.matches))return;
+    if(k<.01){mx=e.clientX;my=e.clientY}
+    tx=e.clientX;ty=e.clientY;tk=1;kick();
+  },{passive:true});
+  const away=()=>{tk=0;kick()};
+  root.addEventListener('mouseleave',away);
+  window.addEventListener('blur',away);
+  window.addEventListener('pointerup',e=>{if(e.pointerType==='touch')away()});
+  window.addEventListener('pointercancel',away);
+  window.addEventListener('resize',()=>{size();draw()});
+  if(pv){
+    pv.addEventListener('pointermove',e=>{const r=pv.getBoundingClientRect();px=e.clientX-r.left;py=e.clientY-r.top;drawPrev()});
+    pv.addEventListener('pointerleave',()=>{px=-1;py=-1;drawPrev()});
+    try{new ResizeObserver(drawPrev).observe(pv)}catch(e){}
+  }
+  try{new MutationObserver(()=>{size();draw()}).observe(root,{attributes:true,attributeFilter:['data-paper','style']})}catch(e){}
+  size();draw();
 })();
 </script>
 </body>
