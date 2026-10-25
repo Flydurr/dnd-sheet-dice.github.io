@@ -118,17 +118,12 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
 .abilities{display:grid;grid-template-columns:1fr;align-content:start}
 .ab{position:relative;text-align:center;border:2px solid var(--ink);background:var(--sheet);border-radius:6px 6px 22px 22px;padding:8px 8px 24px;margin-bottom:28px}
 .ab .nm{font-size:.82rem;color:var(--ink-soft)}
-.ab .modrow{display:flex;align-items:center;justify-content:center;gap:4px}
-.ab .modstep{flex:none;width:28px;height:28px;padding:0;background:transparent;border:2px solid var(--ink);border-radius:4px;color:var(--ink);font-weight:700;font-size:1.05rem;line-height:1}
-.ab .modstep:hover{background:var(--ink);color:var(--paper)}
-.ab .mod{display:block;width:3.6rem;min-height:52px;padding:4px 0;background:transparent;border:0;border-radius:4px;color:var(--ink);font:700 2.7rem/1 var(--serif);text-align:center}
+.ab .mod{display:block;width:100%;min-height:52px;padding:4px 0;background:transparent;border:0;border-radius:4px;color:var(--ink);font:700 2.7rem/1 var(--serif)}
 .ab .mod:hover{color:var(--accent)}
 .ab .score{position:absolute;left:50%;bottom:-17px;transform:translateX(-50%);width:60px;height:34px;padding:0;text-align:center;background:var(--paper);border:2px solid var(--ink);border-radius:50%;font-weight:600;font-size:1rem;color:var(--ink)}
 .side-stats{display:grid;gap:10px}
 .pill{display:flex;justify-content:space-between;align-items:baseline;gap:8px;width:100%;padding:7px 14px;background:var(--sheet);border:2px solid var(--ink);border-radius:999px;font-size:.85rem;text-align:left}
 .pill strong{font:700 1.35rem/1 var(--serif)}
-.pill .pillnum{width:3.4rem;padding:0;text-align:right;background:transparent;border:0;color:inherit;font:700 1.35rem/1 var(--serif)}
-.pill .pillnum:hover,.pill .pillnum:focus{color:var(--accent)}
 button.pill:hover{background:var(--hover)}
 button.pill[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
 
@@ -185,12 +180,6 @@ button.pill[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
 .slot-head input{width:2.6rem;text-align:center}
 .slot-pips{display:flex;flex-wrap:wrap;gap:10px;min-height:22px}
 .slot-count{font-size:.76rem;color:var(--ink-soft)}
-.spell-row{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;padding:9px 0;border-bottom:1px dotted var(--line)}
-.spell-row:first-child{padding-top:0}
-.spell-row .spell-name{flex:1 1 160px;min-width:0;font:600 1.02rem var(--sans)}
-.spell-row .spell-lvl{width:8rem}
-.spell-chk{display:flex;align-items:center;gap:6px;font-size:.85rem;color:var(--ink-soft)}
-.spell-chk input{width:20px;height:20px;accent-color:var(--ink)}
 
 /* Rolls lists */
 .rolls{list-style:none;margin:0;padding:0;columns:240px 2;column-gap:34px}
@@ -383,6 +372,94 @@ legend{padding:0;margin-bottom:8px;font:italic 500 1.15rem var(--serif)}
   .sec{break-inside:avoid}
   .wrap{padding:0}
 }
+
+/* ---------- DM mode / party room ---------- */
+.dm{position:fixed;inset:0;z-index:60;background:var(--paper);overflow:auto;padding:max(14px,env(safe-area-inset-top)) max(14px,env(safe-area-inset-right)) max(14px,env(safe-area-inset-bottom)) max(14px,env(safe-area-inset-left))}
+.dm-in{max-width:1180px;margin:0 auto}
+.dm-top{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between;border-bottom:3px double var(--ink);padding-bottom:12px;margin-bottom:16px}
+.dm-top h2{margin:0;font:700 1.5rem var(--serif);font-style:normal}
+.dm-code{font:700 1.6rem/1 var(--sans);letter-spacing:.18em;background:var(--ink);color:var(--paper);padding:6px 12px;border-radius:4px}
+.dm-lobby{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));max-width:720px;margin:30px auto}
+.dm-card{background:var(--sheet);border:2px solid var(--ink);border-radius:6px;padding:18px;display:flex;flex-direction:column;gap:10px}
+.dm-card h3{margin:0;font:700 1.2rem var(--serif)}
+.dm-card p{margin:0;color:var(--ink-soft);font-size:.9rem}
+.dm-card input{font:700 1.4rem var(--sans);letter-spacing:.2em;text-align:center;padding:8px;border:2px solid var(--ink);border-radius:4px;background:transparent;width:100%}
+.dm-msg{min-height:1.3em;text-align:center;color:var(--bad);font-size:.9rem}
+.dm-body{display:grid;gap:16px;grid-template-columns:minmax(0,1fr) 300px;align-items:start}
+@media (max-width:820px){.dm-body{grid-template-columns:1fr}}
+.dm-grid{display:grid;grid-template-columns:repeat(14,1fr);gap:1px;background:var(--line);border:3px solid var(--ink);border-radius:4px;user-select:none;touch-action:manipulation}
+.dm-c{aspect-ratio:1;background:var(--sheet);display:flex;align-items:center;justify-content:center;font:700 clamp(.6rem,2.2vw,1.1rem) var(--sans);position:relative;cursor:pointer;min-width:0}
+.dm-c[data-t="_"]{background:var(--hover)}
+.dm-c[data-t="#"]{background:var(--ink)}
+.dm-c[data-t="D"]{background:var(--sheet);box-shadow:inset 0 0 0 4px var(--accent)}
+.dm-c[data-t="~"]{background:color-mix(in srgb,var(--good) 35%,var(--sheet))}
+.dm-c.fog{background:#05080f;color:transparent;box-shadow:none}
+.dm-c.dmfog{opacity:.45}
+.dm-tok{width:78%;height:78%;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;border:2px solid var(--paper);text-shadow:0 1px 2px #000;pointer-events:none}
+.dm-tok.me{outline:3px solid var(--accent)}
+.dm-side{display:flex;flex-direction:column;gap:14px}
+.dm-box{background:var(--sheet);border:2px solid var(--ink);border-radius:6px;padding:12px}
+.dm-box h3{margin:0 0 8px;font:700 1rem var(--serif);font-style:normal}
+.dm-tools{display:flex;flex-wrap:wrap;gap:6px}
+.dm-tools .btn{padding:3px 10px;min-height:34px;font-size:.85rem}
+.dm-tools .btn[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.dm-party{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.dm-party li{font-size:.9rem}
+.dm-party .hpbar{height:7px;background:var(--hover);border-radius:4px;overflow:hidden;margin-top:3px}
+.dm-party .hpbar i{display:block;height:100%;background:var(--good)}
+.dm-feed{list-style:none;margin:0;padding:0;max-height:220px;overflow:auto;font-size:.88rem;display:flex;flex-direction:column;gap:5px}
+.dm-feed b{font-size:1.05rem}
+.dm-help{color:var(--ink-soft);font-size:.85rem;margin:8px 0 0}
+.dm-grid.hasbg{background-size:100% 100%;background-repeat:no-repeat;background-color:var(--ink);gap:0}
+.hasbg .dm-c{box-shadow:inset 0 0 0 .5px rgba(255,255,255,.22)}
+.hasbg .dm-c[data-t="_"],.hasbg .dm-c[data-t="."],.hasbg .dm-c[data-t="D"]{background:transparent}
+.hasbg .dm-c[data-t="#"]{background:rgba(10,14,26,.6)}
+.hasbg .dm-c[data-t="~"]{background:rgba(40,110,200,.35)}
+.hasbg .dm-c.fog[data-t]{background:#05080f}
+.dm-size{display:flex;flex-wrap:wrap;gap:8px;align-items:end}
+.dm-size label{font-size:.78rem;color:var(--ink-soft);display:flex;flex-direction:column}
+.dm-size input{width:4.2rem;padding:5px;border:2px solid var(--ink);border-radius:4px;background:transparent}
+.dm-slides{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px;max-height:190px;overflow:auto}
+.dm-slides button{width:100%;text-align:left;background:transparent;border:2px solid var(--line);border-radius:4px;padding:5px 9px;min-height:34px;font-weight:600}
+.dm-slides button[aria-current="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.dm-party .btn{margin-top:5px}
+.dm-sheet{position:fixed;inset:0;z-index:70;background:rgba(0,0,0,.55);overflow:auto;padding:16px}
+.dm-sheet-in{max-width:760px;margin:0 auto;background:var(--sheet);border:3px solid var(--ink);border-radius:6px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.dm-sheet h3{margin:0 0 6px;font:700 1rem var(--serif);font-style:normal;border-bottom:1.5px solid var(--line)}
+.sh-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(104px,1fr));gap:8px}
+.sh-pill{border:2px solid var(--ink);border-radius:6px;padding:6px 8px;text-align:center}
+.sh-pill span{display:block;font-size:.74rem;color:var(--ink-soft)}
+.sh-pill b{font-size:1.15rem}
+.sh-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:2px 16px;font-size:.9rem}
+.sh-list div{display:flex;justify-content:space-between;gap:8px}
+.sh-text{white-space:pre-wrap;font-size:.9rem}
+
+/* manual stats */
+.man-in{display:none}
+html.manual .man-in{display:inline-block;width:3.6rem;text-align:center;padding:4px 2px;border:2px solid var(--accent);border-radius:4px;background:transparent;color:var(--ink)}
+html.manual label.man-in{display:flex;flex-direction:column;width:auto;border:0;padding:0;font-size:.76rem;color:var(--ink-soft)}
+html.manual .hide-man,html.manual .auto-only{display:none !important}
+#manualBtn[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+
+/* modifier edit */
+.ab .mod{text-align:center;cursor:text}
+.ab .mod.ovd{color:var(--accent)}
+.mod-act{display:flex;justify-content:center;align-items:center;gap:4px;min-height:34px}
+.ov-x{border:0;background:transparent;color:var(--accent);font-size:1.05rem;line-height:1;padding:0 6px;min-height:30px}
+
+/* custom themes and picture background */
+html[data-paper="image"] body{background-image:linear-gradient(var(--bg-veil),var(--bg-veil)),var(--bg-image);background-size:cover;background-position:center;background-repeat:no-repeat;background-attachment:fixed}
+@media print{html[data-paper="image"] body{background-image:none !important}}
+.acc.custom{position:relative;overflow:hidden;cursor:pointer;background:conic-gradient(#e74c3c,#f1c40f,#2ecc71,#3498db,#9b59b6,#e74c3c)}
+.acc.custom input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;border:0;padding:0}
+.acc.custom.on{box-shadow:0 0 0 3px var(--sheet),0 0 0 5px var(--ink)}
+.c-edit{margin-top:10px;display:flex;flex-direction:column;gap:10px;border:2px dashed var(--line);border-radius:6px;padding:10px}
+.c-edit label,.c-range{display:flex;flex-direction:column;gap:3px;font-size:.82rem;color:var(--ink-soft)}
+.c-edit input[type="text"]{padding:7px 9px;border:2px solid var(--ink);border-radius:4px;background:transparent;color:var(--ink)}
+.c-colors{display:grid;grid-template-columns:repeat(auto-fit,minmax(86px,1fr));gap:10px}
+.c-colors input{width:100%;height:42px;padding:2px;border:2px solid var(--ink);border-radius:4px;background:transparent;cursor:pointer}
+.c-range{margin-top:10px}
+#cNew:disabled,#bgDel:disabled{opacity:.45}
 </style>
 </head>
 <body>
@@ -410,6 +487,8 @@ legend{padding:0;margin-bottom:8px;font:italic 500 1.15rem var(--serif)}
       <button type="button" class="btn" id="customBtn">Customize</button>
       <button type="button" class="btn" id="importTopBtn">Import</button>
       <button type="button" class="btn" id="exportBtn">Export</button>
+      <button type="button" class="btn" id="manualBtn" aria-pressed="false">Manual stats: Off</button>
+      <button type="button" class="btn primary" id="roomBtn">DM / Party</button>
     </div>
     <p class="status" id="status" role="status"></p>
   </div>
@@ -429,7 +508,7 @@ legend{padding:0;margin-bottom:8px;font:italic 500 1.15rem var(--serif)}
     <aside class="rail" aria-label="Ability scores">
       <div class="abilities" id="abilities"></div>
       <div class="side-stats">
-        <div class="pill"><span>Proficiency</span><input id="profBonus" class="pillnum" type="text" inputmode="numeric" aria-label="Proficiency bonus"></div>
+        <div class="pill"><span>Proficiency</span><strong id="profBonus">+2</strong></div>
         <div class="pill"><span>Passive Perception</span><strong id="passive">10</strong></div>
         <button type="button" class="pill tgl" id="inspBtn" aria-pressed="false"><span>Inspiration</span><strong id="inspState">No</strong></button>
       </div>
@@ -508,9 +587,6 @@ legend{padding:0;margin-bottom:8px;font:italic 500 1.15rem var(--serif)}
             <div class="stat"><span>Spell attack</span><button type="button" class="btn small" id="spellAtk">–</button></div>
           </div>
           <div class="slots" id="slots"></div>
-          <p class="hint" style="margin-top:18px">Your spells</p>
-          <div id="spellsList"></div>
-          <button type="button" class="btn small add-row" id="addSpell">Add spell</button>
         </div>
       </section>
 
@@ -617,8 +693,22 @@ legend{padding:0;margin-bottom:8px;font:italic 500 1.15rem var(--serif)}
   <div class="drawer-body">
     <fieldset><legend>Color mode</legend><div class="opts" id="c-mode"></div></fieldset>
     <fieldset><legend>Palette</legend><div class="pal-grid" id="c-pal"></div></fieldset>
-    <fieldset><legend>Accent color</legend><div class="acc-row" id="c-acc"></div></fieldset>
-    <fieldset><legend>Background</legend><div class="opts" id="c-paper"></div></fieldset>
+    <fieldset><legend>Custom themes</legend><div class="pal-grid" id="c-cpal"></div>
+      <div class="opts" style="margin-top:8px"><button type="button" id="cNew">+ New custom theme</button></div>
+      <div class="c-edit" id="c-edit" hidden>
+        <label>Name<input type="text" id="cName" maxlength="20"></label>
+        <div class="c-colors"><label>Page<input type="color" id="cPaper"></label><label>Cards<input type="color" id="cSheet"></label><label>Text<input type="color" id="cInk"></label><label>Dice tray<input type="color" id="cTray"></label></div>
+        <div class="opts"><button type="button" id="cDel">Delete this theme</button></div>
+        <p class="hint" style="margin:0">Custom themes look the same in light and dark mode.</p>
+      </div></fieldset>
+    <fieldset><legend>Accent color</legend><div class="acc-row" id="c-acc"></div><p class="hint" style="margin:8px 0 0">The rainbow circle picks any color.</p></fieldset>
+    <fieldset><legend>Background</legend><div class="opts" id="c-paper"></div>
+      <div id="c-bgimg" hidden style="margin-top:10px">
+        <div class="opts"><button type="button" id="bgUp">Upload picture</button><button type="button" id="bgDel">Remove picture</button></div>
+        <input type="file" id="bgFile" accept="image/*" hidden>
+        <label class="c-range">Soften picture<input type="range" id="bgDim" min="0" max="85" step="5"></label>
+        <p class="hint" style="margin:6px 0 0">Cards stay solid so text is easy to read. The picture is kept on this device only.</p>
+      </div></fieldset>
     <fieldset><legend>Lettering</legend><div class="opts" id="c-font"></div></fieldset>
     <fieldset><legend>Text size</legend><div class="opts" id="c-size"></div></fieldset>
     <fieldset><legend>Spacing</legend><div class="opts" id="c-density"></div></fieldset>
@@ -711,37 +801,29 @@ const UI_KEY = 'dnd-character-sheet-ui-v1';
 
 function defaults(){
   const slots = {}; for (let i = 1; i <= 9; i++) slots[i] = {max:0, used:0};
-  const saveProf = {}, abilities = {}, mods = {};
-  ABILITIES.forEach(([k]) => { saveProf[k] = false; abilities[k] = 10; mods[k] = 0; });
+  const saveProf = {}, abilities = {};
+  ABILITIES.forEach(([k]) => { saveProf[k] = false; abilities[k] = 10; });
   const skills = {}; SKILLS.forEach(([k]) => { skills[k] = 0; });
+  const manMod = {}, manSave = {}, manSkill = {}, modOn = {}, modVal = {};
+  ABILITIES.forEach(([k]) => { modOn[k] = false; modVal[k] = 0; });
+  ABILITIES.forEach(([k]) => { manMod[k] = 0; manSave[k] = 0; }); SKILLS.forEach(([k]) => { manSkill[k] = 0; });
   return {
     name:'', cls:'', level:1, species:'', background:'',
-    abilities, mods, saveProf, skills, inspiration:false, prof:2,
+    abilities, saveProf, skills, inspiration:false,
     ac:10, initBonus:0, speed:30,
     hp:{cur:10, max:10, temp:0}, hitDice:'', death:{s:0, f:0},
     attacks:[{name:'', ability:'str', prof:true, bonus:0, dmg:''}],
-    spellAbility:'', slots, spells:[],
+    spellAbility:'', slots,
     currency:{cp:0, sp:0, ep:0, gp:0, pp:0},
-    features:'', gear:''
+    features:'', gear:'',
+    manual:false, manInit:false, modOn, modVal,
+    man:{mod:manMod, save:manSave, skill:manSkill, prof:0, init:0, passive:0, spellDc:0, spellAtk:0}
   };
 }
 function normalize(obj){
-  const patch = obj && typeof obj === 'object' ? Object.assign({}, obj) : {};
-  if (!patch.mods){
-    const src = patch.abilities && typeof patch.abilities === 'object' ? patch.abilities : {};
-    const mods = {};
-    ABILITIES.forEach(([k]) => { const sc = src[k] != null ? num(src[k]) : 10; mods[k] = Math.floor((sc - 10) / 2); });
-    patch.mods = mods;
-  }
-  if (patch.prof == null){
-    const lvl = clamp(num(patch.level != null ? patch.level : 1), 1, 20);
-    patch.prof = 2 + Math.floor((lvl - 1) / 4);
-  }
-  const s = merge(defaults(), patch);
+  const s = merge(defaults(), obj);
   s.attacks = s.attacks.filter(a => a && typeof a === 'object')
     .map(a => Object.assign({name:'', ability:'str', prof:true, bonus:0, dmg:''}, a));
-  s.spells = (Array.isArray(s.spells) ? s.spells : []).filter(sp => sp && typeof sp === 'object')
-    .map(sp => Object.assign({name:'', level:0, prepared:false}, sp));
   return s;
 }
 let S = defaults();
@@ -800,13 +882,21 @@ const HIDEABLE = [['attacks','Attacks'],['spells','Spellcasting'],['saves','Savi
 function uiDefaults(){
   return {mode:'auto', palette:'blueprint', accent:'ruby', paper:'graph', font:'storybook', size:'m', density:'comfortable',
     hide:{attacks:false, spells:false, saves:false, skills:false, notes:false, death:false},
-    collapsed:{}, animate:true, sound:false, vibrate:false, autoReset:false};
+    collapsed:{}, animate:true, sound:false, vibrate:false, autoReset:false,
+    customThemes:[], accentColor:'#B0243B', bgDim:55};
 }
 function normalizeUI(obj){
   const u = merge(uiDefaults(), obj);
   u.collapsed = (obj && obj.collapsed && typeof obj.collapsed === 'object' && !Array.isArray(obj.collapsed)) ? obj.collapsed : {};
-  if (!PALETTES[u.palette]) u.palette = 'blueprint';
-  if (!ACCENTS[u.accent]) u.accent = 'ruby';
+  const hexOK = v => typeof v === 'string' && /^#[0-9a-fA-F]{6}$/.test(v);
+  u.customThemes = (obj && Array.isArray(obj.customThemes) ? obj.customThemes : [])
+    .filter(c => c && typeof c.id === 'string' && /^[a-z0-9]{1,12}$/.test(c.id) && hexOK(c.paper) && hexOK(c.sheet) && hexOK(c.ink) && hexOK(c.tray))
+    .slice(0, 8).map(c => ({id:c.id, name:String(c.name || 'My theme').slice(0, 20), paper:c.paper, sheet:c.sheet, ink:c.ink, tray:c.tray}));
+  if (!hexOK(u.accentColor)) u.accentColor = '#B0243B';
+  u.bgDim = clamp(num(u.bgDim), 0, 85);
+  if (!['graph','dots','plain','image'].includes(u.paper)) u.paper = 'graph';
+  if (!PALETTES[u.palette] && !u.customThemes.some(c => 'c:' + c.id === u.palette)) u.palette = 'blueprint';
+  if (!ACCENTS[u.accent] && u.accent !== 'custom') u.accent = 'ruby';
   if (!FONTS[u.font]) u.font = 'storybook';
   if (!(u.size in SIZES)) u.size = 'm';
   return u;
@@ -830,17 +920,50 @@ function isDark(){
   if (a === 'light') return false;
   return !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
 }
+const BG_KEY = 'dnd-character-sheet-bg-v1';
+let BG = '';
+try { const b = localStorage.getItem(BG_KEY) || ''; if (/^data:image\/jpeg;base64,[A-Za-z0-9+\/=]+$/.test(b)) BG = b; } catch(e) {}
+const hex2rgb = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
+const lum = h => { const [r, g, b] = hex2rgb(h).map(x => { x /= 255; return x <= .03928 ? x / 12.92 : Math.pow((x + .055) / 1.055, 2.4); }); return .2126 * r + .7152 * g + .0722 * b; };
+const mixHex = (a, b, t) => { const A = hex2rgb(a), B = hex2rgb(b); return '#' + A.map((x, i) => Math.round(x * (1 - t) + B[i] * t).toString(16).padStart(2, '0')).join(''); };
+const customById = id => (typeof id === 'string' && id.startsWith('c:')) ? UI.customThemes.find(c => 'c:' + c.id === id) : null;
+function customToTheme(c){
+  const [r, g, b] = hex2rgb(c.ink), a = x => 'rgba(' + r + ',' + g + ',' + b + ',' + x + ')';
+  const trayFg = lum(c.tray) < .4 ? '#F4F4F4' : '#14161A', [tr, tg, tb] = hex2rgb(trayFg);
+  return {paper:c.paper, grid:a(.09), sheet:c.sheet, ink:c.ink, soft:mixHex(c.ink, c.sheet, .38), line:a(.3), hover:a(.07),
+    tray:c.tray, trayFg, traySoft:mixHex(trayFg, c.tray, .35), trayLine:'rgba(' + tr + ',' + tg + ',' + tb + ',.25)'};
+}
+async function shrinkImage(file){
+  if (!file.type.startsWith('image/')) throw new Error('type');
+  const url = URL.createObjectURL(file), im = new Image();
+  try { await new Promise((ok, no) => { im.onload = ok; im.onerror = no; im.src = url; }); } finally { URL.revokeObjectURL(url); }
+  let sc = Math.min(1, 1600 / Math.max(im.width, im.height));
+  for (let k = 0; k < 6; k++){
+    const c = document.createElement('canvas'); c.width = Math.max(1, Math.round(im.width * sc)); c.height = Math.max(1, Math.round(im.height * sc));
+    c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
+    for (const q of [.8, .65, .5]){ const d = c.toDataURL('image/jpeg', q); if (d.length <= 600000) return d; }
+    sc *= .75;
+  }
+  throw new Error('big');
+}
 let updateSwatches = () => {};
 function applyAppearance(){
-  const dark = isDark();
+  const cp = customById(UI.palette);
+  const dark = cp ? lum(cp.paper) < .4 : isDark();
   const pal = PALETTES[UI.palette] || PALETTES.blueprint;
-  const t = dark ? pal.d : pal.l;
+  const t = cp ? customToTheme(cp) : (dark ? pal.d : pal.l);
+  const cu = UI.accent === 'custom';
   const ac = ACCENTS[UI.accent] || ACCENTS.ruby;
+  const accHex = cu ? UI.accentColor : (dark ? ac.d : ac.l);
+  const onAcc = cu ? (lum(accHex) < .4 ? '#FFFFFF' : '#101828') : (dark ? '#0D182B' : '#FFFFFF');
+  const [pr, pg, pb2] = hex2rgb(t.paper);
   const v = {
+    '--bg-image':BG ? 'url("' + BG + '")' : 'linear-gradient(transparent,transparent)',
+    '--bg-veil':'rgba(' + pr + ',' + pg + ',' + pb2 + ',' + (clamp(num(UI.bgDim), 0, 85) / 100) + ')',
     '--paper':t.paper, '--grid':t.grid, '--sheet':t.sheet, '--ink':t.ink, '--ink-soft':t.soft, '--line':t.line, '--hover':t.hover,
     '--tray-bg':t.tray, '--tray-fg':t.trayFg, '--tray-soft':t.traySoft, '--tray-line':t.trayLine,
-    '--accent':dark ? ac.d : ac.l, '--on-accent':dark ? '#0D182B' : '#FFFFFF',
-    '--tray-btn':ac.d, '--tray-btn-fg':'#101828',
+    '--accent':accHex, '--on-accent':onAcc,
+    '--tray-btn':cu ? accHex : ac.d, '--tray-btn-fg':cu ? onAcc : '#101828',
     '--good':dark ? '#5CC79B' : '#1F7A57', '--bad':dark ? '#FF8FA0' : '#B0243B', '--on-tone':dark ? '#0D182B' : '#FFFFFF',
     '--tray-good':'#6FD3A5', '--tray-bad':'#FF9AA8',
     '--serif':FONTS[UI.font].serif, '--scale':String(SIZES[UI.size])
@@ -857,14 +980,22 @@ function applyHide(){
 }
 
 /* ---------- derived values ---------- */
-const prof = () => num(S.prof);
-const saveBonus = k => num(S.mods[k]) + (S.saveProf[k] ? prof() : 0);
+const mod = score => Math.floor((num(score) - 10) / 2);
+const man = () => !!S.manual;
+const abMod = k => man() ? num(S.man.mod[k]) : (S.modOn && S.modOn[k] ? num(S.modVal[k]) : mod(S.abilities[k]));
+const prof = () => man() ? num(S.man.prof) : 2 + Math.floor((clamp(num(S.level), 1, 20) - 1) / 4);
+const saveBonus = k => man() ? num(S.man.save[k]) : abMod(k) + (S.saveProf[k] ? prof() : 0);
 const skillBonus = key => {
+  if (man()) return num(S.man.skill[key]);
   const sk = SKILLS.find(s => s[0] === key);
-  return num(S.mods[sk[2]]) + prof() * (S.skills[key] || 0);
+  return abMod(sk[2]) + prof() * (S.skills[key] || 0);
 };
-const initTotal = () => num(S.mods.dex) + num(S.initBonus);
-const toHit = a => (a.ability ? num(S.mods[a.ability]) : 0) + (a.prof ? prof() : 0) + num(a.bonus);
+const initTotal = () => man() ? num(S.man.init) : abMod('dex') + num(S.initBonus);
+const passiveTotal = () => man() ? num(S.man.passive) : 10 + skillBonus('perception');
+const spellDcTotal = () => man() ? num(S.man.spellDc) : 8 + prof() + abMod(S.spellAbility);
+const spellAtkTotal = () => man() ? num(S.man.spellAtk) : prof() + abMod(S.spellAbility);
+const toHit = a => man() ? num(a.hit) : (a.ability ? abMod(a.ability) : 0) + (a.prof ? prof() : 0) + num(a.bonus);
+
 
 /* ---------- binding ---------- */
 const getPath = p => p.split('.').reduce((o, k) => (o == null ? o : o[k]), S);
@@ -1025,6 +1156,7 @@ const MODE_WORD = {adv:'advantage', dis:'disadvantage'};
 
 function finish(res){
   res.time = Date.now();
+  try { if (window.__sheetBridge && window.__sheetBridge.onRoll) window.__sheetBridge.onRoll(res); } catch(e) {}
   showResult(res);
   feedback(res);
   log.unshift(res);
@@ -1091,24 +1223,25 @@ function renderLog(){
 
 /* ---------- build: abilities, saves, skills ---------- */
 const abilEls = {}, saveEls = {}, skillEls = {};
+const ovIns = [];
+function editMod(k, raw){
+  const t = String(raw).replace(/[\u2212\u2012\u2013]/g, '-').replace(/\s/g, '');
+  if (man()){ if (/^[+-]?\d{1,3}$/.test(t)){ S.man.mod[k] = parseInt(t, 10); update(); save(); } return; }
+  if (t === '') S.modOn[k] = false;
+  else if (/^[+-]?\d{1,3}$/.test(t)){ S.modOn[k] = true; S.modVal[k] = parseInt(t, 10); }
+  else return;
+  update(); save();
+}
 function buildAbilities(){
   ABILITIES.forEach(([k, name]) => {
-    const modInput = h('input', {class:'mod', type:'text', inputmode:'numeric', 'data-mod':k, 'aria-label':name + ' modifier'});
-    modInput.value = '+0';
-    modInput.addEventListener('focus', () => { modInput.select(); });
-    modInput.addEventListener('input', () => {
-      const raw = modInput.value.replace(/\u2212/g, '-').trim();
-      if (raw === '' || raw === '-' || raw === '+') return;
-      const n = parseInt(raw, 10);
-      if (isNaN(n)) return;
-      S.mods[k] = clamp(n, -99, 99);
-      update(); save();
-    });
-    modInput.addEventListener('blur', () => { modInput.value = fmt(num(S.mods[k])); });
-    modInput.addEventListener('keydown', e => { if (e.key === 'Enter') modInput.blur(); });
+    const modBtn = h('input', {class:'mod', type:'text', inputmode:'text', autocomplete:'off', value:'+0',
+      oninput:e => editMod(k, e.target.value), onfocus:e => e.target.select(), onblur:() => update()});
+    const rollBtn = h('button', {class:'btn small', type:'button', 'aria-label':'Roll ' + name + ' check', onclick:() => finish(rollD20(name + ' check', abMod(k)))}, 'Roll');
+    const rst = h('button', {class:'ov-x', type:'button', title:'Back to calculated', 'aria-label':'Use the calculated ' + name + ' modifier again',
+      onclick:() => { S.modOn[k] = false; update(); save(); }}, '\u21BA');
     const score = h('input', {class:'score', type:'number', inputmode:'numeric', 'data-bind':'abilities.' + k, 'aria-label':name + ' score'});
-    $('#abilities').append(h('div', {class:'ab'}, h('div', {class:'nm'}, name), modInput, score));
-    abilEls[k] = modInput;
+    $('#abilities').append(h('div', {class:'ab'}, h('div', {class:'nm'}, name), modBtn, h('div', {class:'mod-act'}, rollBtn, rst), score));
+    abilEls[k] = modBtn; ovIns.push({k, rst});
   });
 }
 function buildSaves(){
@@ -1152,6 +1285,8 @@ function renderAttacks(){
     const profChk = h('input', {type:'checkbox', checked:!!a.prof, onchange:e => { a.prof = e.target.checked; update(); save(); }});
     const bonusIn = h('input', {class:'line num', type:'number', inputmode:'numeric', value:a.bonus, 'aria-label':'Extra attack bonus',
       oninput:e => { a.bonus = num(e.target.value); update(); save(); }});
+    const hitIn = h('input', {class:'line num', type:'number', inputmode:'numeric', value:a.hit == null ? 0 : a.hit, 'aria-label':'Attack to-hit bonus',
+      oninput:e => { a.hit = num(e.target.value); update(); save(); }});
     const dmgIn = h('input', {class:'line dmg', type:'text', placeholder:'1d8+3', value:a.dmg, 'aria-label':'Damage roll', autocomplete:'off', autocapitalize:'off', spellcheck:'false',
       oninput:e => { a.dmg = e.target.value; update(); save(); }});
     const hit = h('button', {class:'btn primary', type:'button', onclick:() => finish(rollD20((a.name || 'Attack') + ' attack', toHit(a)))}, 'Hit');
@@ -1160,9 +1295,10 @@ function renderAttacks(){
     box.append(h('div', {class:'atk'},
       h('div', {class:'atk-head'}, nameIn, remove),
       h('div', {class:'atk-ctl'},
-        h('label', {}, 'Ability', sel),
-        h('label', {class:'chk'}, profChk, 'Proficient'),
-        h('label', {}, 'Extra', bonusIn),
+        h('label', {class:'auto-only'}, 'Ability', sel),
+        h('label', {class:'chk auto-only'}, profChk, 'Proficient'),
+        h('label', {class:'auto-only'}, 'Extra', bonusIn),
+        h('label', {class:'man-in'}, 'To hit', hitIn),
         h('label', {}, 'Damage', dmgIn)),
       h('div', {class:'atk-btns'}, hit, dmg, crit)));
     atkEls.push({a, hit, dmg, crit, dmgIn});
@@ -1232,28 +1368,6 @@ function renderSlotPips(lv){
 }
 function renderSlots(){ for (let lv = 1; lv <= 9; lv++) renderSlotPips(lv); }
 
-function renderSpells(){
-  const box = $('#spellsList'); box.textContent = '';
-  if (!S.spells.length){
-    box.append(h('p', {class:'empty'}, 'No spells yet. Add one you know or have prepared.'));
-    return;
-  }
-  S.spells.forEach((sp, i) => {
-    const nameIn = h('input', {class:'line spell-name', type:'text', placeholder:'Fireball', value:sp.name, 'aria-label':'Spell name', autocomplete:'off',
-      oninput:e => { sp.name = e.target.value; save(); }});
-    const lvlSel = h('select', {class:'line spell-lvl', 'aria-label':'Spell level',
-      onchange:e => { sp.level = num(e.target.value); save(); }},
-      h('option', {value:0}, 'Cantrip'),
-      ...[1,2,3,4,5,6,7,8,9].map(n => h('option', {value:n}, ORD[n] + ' level')));
-    lvlSel.value = sp.level;
-    const chk = h('input', {type:'checkbox', checked:!!sp.prepared, 'aria-label':(sp.name || 'Spell') + ' prepared',
-      onchange:e => { sp.prepared = e.target.checked; save(); }});
-    const remove = h('button', {class:'btn small', type:'button', 'aria-label':'Remove ' + (sp.name || 'this spell'),
-      onclick:() => { S.spells.splice(i, 1); renderSpells(); save(); }}, 'Remove');
-    box.append(h('div', {class:'spell-row'}, nameIn, lvlSel, h('label', {class:'spell-chk'}, chk, 'Prepared'), remove));
-  });
-}
-
 /* ---------- vitals actions ---------- */
 function damage(n){
   n = Math.max(0, n);
@@ -1279,11 +1393,12 @@ function longRest(){
 /* ---------- update derived UI ---------- */
 function update(){
   const p = prof();
-  if (document.activeElement !== $('#profBonus')) $('#profBonus').value = fmt(p);
+  $('#profBonus').textContent = fmt(p);
   ABILITIES.forEach(([k, name]) => {
-    const m = num(S.mods[k]);
+    const m = abMod(k);
     if (document.activeElement !== abilEls[k]) abilEls[k].value = fmt(m);
-    abilEls[k].setAttribute('aria-label', name + ' modifier, currently ' + fmt(m) + '. Edit to set a new modifier.');
+    abilEls[k].setAttribute('aria-label', name + ' modifier, ' + fmt(m) + '. Click to type a different number.');
+    abilEls[k].classList.toggle('ovd', !man() && !!S.modOn[k]);
     const sb = saveBonus(k), e = saveEls[k];
     e.bn.textContent = fmt(sb);
     e.pip.setAttribute('data-lv', S.saveProf[k] ? 1 : 0);
@@ -1301,7 +1416,7 @@ function update(){
   });
   $('#initBtn').textContent = fmt(initTotal());
   $('#initBtn').setAttribute('aria-label', 'Roll initiative, ' + fmt(initTotal()));
-  $('#passive').textContent = 10 + skillBonus('perception');
+  $('#passive').textContent = passiveTotal();
 
   atkEls.forEach(x => {
     const ok = !!parseExpr(x.a.dmg);
@@ -1312,11 +1427,10 @@ function update(){
 
   const sa = S.spellAbility;
   const sd = $('#spellDc'), sat = $('#spellAtk');
-  if (sa && S.mods[sa] != null){
-    const m = num(S.mods[sa]);
-    sd.textContent = 8 + p + m;
-    sat.textContent = fmt(p + m); sat.disabled = false;
-    sat.setAttribute('aria-label', 'Roll spell attack, ' + fmt(p + m));
+  if (man() || (sa && S.abilities[sa] != null)){
+    sd.textContent = spellDcTotal();
+    sat.textContent = fmt(spellAtkTotal()); sat.disabled = false;
+    sat.setAttribute('aria-label', 'Roll spell attack, ' + fmt(spellAtkTotal()));
   } else {
     sd.textContent = '\u2013'; sat.textContent = '\u2013'; sat.disabled = true;
   }
@@ -1329,6 +1443,7 @@ function update(){
 
   $('#inspBtn').setAttribute('aria-pressed', S.inspiration ? 'true' : 'false');
   $('#inspState').textContent = S.inspiration ? 'Yes' : 'No';
+  syncMan();
 }
 
 /* ---------- dice tray ---------- */
@@ -1456,7 +1571,7 @@ function checkRow(container, label, help, get, set){
 }
 function buildCustomize(){
   optionRow($('#c-mode'), [['auto','Match device'],['light','Light'],['dark','Dark']], 'mode');
-  optionRow($('#c-paper'), [['graph','Graph paper'],['dots','Dots'],['plain','Plain']], 'paper');
+  optionRow($('#c-paper'), [['graph','Graph paper'],['dots','Dots'],['plain','Plain'],['image','Picture']], 'paper');
   optionRow($('#c-font'), Object.keys(FONTS).map(k => [k, FONTS[k].name, FONTS[k].serif]), 'font');
   optionRow($('#c-size'), [['s','Small'],['m','Default'],['l','Large'],['xl','Extra large']], 'size');
   optionRow($('#c-density'), [['comfortable','Comfortable'],['compact','Compact']], 'density');
@@ -1489,6 +1604,55 @@ function buildCustomize(){
     accBtns.forEach(({k, b}) => b.setAttribute('aria-pressed', String(UI.accent === k)));
   });
 
+  const ci = h('input', {type:'color', 'aria-label':'Custom accent color', oninput:e => { UI.accent = 'custom'; UI.accentColor = e.target.value; afterUI(); }});
+  const cl = h('label', {class:'acc custom', title:'Pick any accent color'}, ci);
+  acc.append(cl);
+  syncers.push(() => { const on = UI.accent === 'custom'; cl.classList.toggle('on', on); cl.style.background = on ? UI.accentColor : ''; if (document.activeElement !== ci) ci.value = UI.accentColor; });
+
+  const cpal = $('#c-cpal'), ced = $('#c-edit'), cur = () => customById(UI.palette);
+  let delArm = false;
+  syncers.push(() => {
+    cpal.textContent = '';
+    UI.customThemes.forEach(c => {
+      const sw = h('span', {class:'sw', 'aria-hidden':'true'}, h('i', {}), h('i', {}), h('i', {}));
+      sw.children[0].style.background = c.paper; sw.children[1].style.background = c.sheet; sw.children[2].style.background = c.ink;
+      const b = h('button', {class:'pal', type:'button', 'aria-pressed':String(UI.palette === 'c:' + c.id), onclick:() => { UI.palette = 'c:' + c.id; afterUI(); }}, c.name);
+      b.prepend(sw); cpal.append(b);
+    });
+    const c = cur(); ced.hidden = !c;
+    if (c) [['#cName','name'],['#cPaper','paper'],['#cSheet','sheet'],['#cInk','ink'],['#cTray','tray']].forEach(([sel, k]) => { const el = $(sel); if (document.activeElement !== el) el.value = c[k]; });
+    $('#cNew').disabled = UI.customThemes.length >= 8;
+    delArm = false; $('#cDel').textContent = 'Delete this theme';
+  });
+  [['#cPaper','paper'],['#cSheet','sheet'],['#cInk','ink'],['#cTray','tray']].forEach(([sel, k]) => $(sel).addEventListener('input', e => { const c = cur(); if (c){ c[k] = e.target.value; afterUI(); } }));
+  $('#cName').addEventListener('input', e => { const c = cur(); if (c){ c.name = e.target.value.slice(0, 20) || 'My theme'; afterUI(); } });
+  $('#cNew').addEventListener('click', () => {
+    if (UI.customThemes.length >= 8) return;
+    const dark = isDark(), p = PALETTES[UI.palette], base = cur() || (p ? (dark ? p.d : p.l) : PALETTES.blueprint.l);
+    const id = Math.random().toString(36).slice(2, 8);
+    UI.customThemes.push({id, name:'My theme ' + (UI.customThemes.length + 1), paper:base.paper, sheet:base.sheet, ink:base.ink, tray:base.tray});
+    UI.palette = 'c:' + id; afterUI();
+  });
+  $('#cDel').addEventListener('click', () => {
+    const c = cur(); if (!c) return;
+    if (!delArm){ delArm = true; $('#cDel').textContent = 'Tap again to delete'; return; }
+    UI.customThemes = UI.customThemes.filter(x => x !== c); UI.palette = 'blueprint'; afterUI();
+  });
+
+  const bgBox = $('#c-bgimg'), bgDim = $('#bgDim');
+  syncers.push(() => { bgBox.hidden = UI.paper !== 'image'; if (document.activeElement !== bgDim) bgDim.value = UI.bgDim; $('#bgDel').disabled = !BG; });
+  $('#bgUp').addEventListener('click', () => $('#bgFile').click());
+  $('#bgFile').addEventListener('change', async e => {
+    const f = e.target.files[0]; e.target.value = ''; if (!f) return;
+    try {
+      BG = await shrinkImage(f); UI.paper = 'image';
+      try { localStorage.setItem(BG_KEY, BG); } catch(err) { say('The picture is too big to keep after you close the page.'); }
+      afterUI();
+    } catch(err) { say('Couldn\u2019t use that picture.'); }
+  });
+  $('#bgDel').addEventListener('click', () => { BG = ''; try { localStorage.removeItem(BG_KEY); } catch(e) {} if (UI.paper === 'image') UI.paper = 'graph'; afterUI(); });
+  bgDim.addEventListener('input', e => { UI.bgDim = parseInt(e.target.value, 10) || 0; afterUI(); });
+
   HIDEABLE.forEach(([k, label]) => checkRow($('#c-hide'), label, null, () => !UI.hide[k], v => { UI.hide[k] = !v; }));
   checkRow($('#c-roll'), 'Animate the result', 'The number tumbles before it settles.', () => UI.animate, v => { UI.animate = v; });
   checkRow($('#c-roll'), 'Play a dice sound', null, () => UI.sound, v => { UI.sound = v; });
@@ -1496,8 +1660,8 @@ function buildCustomize(){
   checkRow($('#c-roll'), 'Return to Normal after each roll', 'Advantage or disadvantage lasts for one roll only.', () => UI.autoReset, v => { UI.autoReset = v; });
 
   $('#resetLook').addEventListener('click', () => {
-    const keep = UI.collapsed;
-    UI = uiDefaults(); UI.collapsed = keep;
+    const keep = UI.collapsed, keepC = UI.customThemes;
+    UI = uiDefaults(); UI.collapsed = keep; UI.customThemes = keepC;
     afterUI();
   });
   $('#closeCustom').addEventListener('click', () => closeDlg($('#customDlg')));
@@ -1523,12 +1687,12 @@ function buildMarkdown(){
   L.push(identLine());
   L.push('');
   L.push('AC ' + S.ac + ', Initiative ' + fmt(initTotal()) + ', Speed ' + S.speed + ' ft, HP ' + S.hp.cur + '/' + S.hp.max + (S.hp.temp ? ' (+' + S.hp.temp + ' temporary)' : '') +
-    ', Proficiency ' + fmt(p) + ', Passive Perception ' + (10 + skillBonus('perception')) + (S.hitDice ? ', Hit dice ' + S.hitDice : ''));
+    ', Proficiency ' + fmt(p) + ', Passive Perception ' + (passiveTotal()) + (S.hitDice ? ', Hit dice ' + S.hitDice : ''));
   L.push('');
   L.push('## Abilities');
   L.push('| Ability | Score | Modifier | Save |');
   L.push('| --- | --- | --- | --- |');
-  ABILITIES.forEach(([k, n]) => L.push('| ' + n + ' | ' + S.abilities[k] + ' | ' + fmt(num(S.mods[k])) + ' | ' + fmt(saveBonus(k)) + (S.saveProf[k] ? ' (proficient)' : '') + ' |'));
+  ABILITIES.forEach(([k, n]) => L.push('| ' + n + ' | ' + S.abilities[k] + ' | ' + fmt(abMod(k)) + ' | ' + fmt(saveBonus(k)) + (S.saveProf[k] ? ' (proficient)' : '') + ' |'));
   L.push('');
   L.push('## Skills');
   SKILLS.forEach(([key, n, ab]) => L.push('- ' + n + ' (' + ab.charAt(0).toUpperCase() + ab.slice(1) + '): ' + fmt(skillBonus(key)) + (S.skills[key] ? ' (' + PROF_WORD[S.skills[key]] + ')' : '')));
@@ -1542,16 +1706,10 @@ function buildMarkdown(){
   if (S.spellAbility || slotLines.length){
     L.push('');
     L.push('## Spellcasting');
-    if (S.spellAbility){
-      const m = num(S.mods[S.spellAbility]);
-      L.push('Ability ' + S.spellAbility.toUpperCase() + ', spell save DC ' + (8 + p + m) + ', spell attack ' + fmt(p + m));
+    if (S.spellAbility || man()){
+      L.push((S.spellAbility ? 'Ability ' + S.spellAbility.toUpperCase() + ', ' : '') + 'spell save DC ' + spellDcTotal() + ', spell attack ' + fmt(spellAtkTotal()));
     }
     L.push(...slotLines);
-  }
-  if (S.spells.length){
-    L.push('');
-    L.push('## Spells');
-    S.spells.forEach(sp => L.push('- ' + (sp.name || 'Spell') + ' (' + (sp.level ? ORD[sp.level] + ' level' : 'Cantrip') + ')' + (sp.prepared ? ' — prepared' : '')));
   }
   if (S.features.trim()){ L.push(''); L.push('## Features and traits'); L.push(S.features.trim()); }
   if (S.gear.trim()){ L.push(''); L.push('## Equipment and notes'); L.push(S.gear.trim()); }
@@ -1563,7 +1721,7 @@ function buildMarkdown(){
 function buildPrintable(){
   const p = prof();
   const li = (cls, val, label) => '<li><span class="dot ' + cls + '"></span><b>' + val + '</b><span>' + label + '</span></li>';
-  const abil = ABILITIES.map(([k, n]) => '<div class="ab"><div class="an">' + n + '</div><div class="am">' + fmt(num(S.mods[k])) + '</div><div class="as">' + esc(S.abilities[k]) + '</div></div>').join('');
+  const abil = ABILITIES.map(([k, n]) => '<div class="ab"><div class="an">' + n + '</div><div class="am">' + fmt(abMod(k)) + '</div><div class="as">' + esc(S.abilities[k]) + '</div></div>').join('');
   const saves = ABILITIES.map(([k, n]) => li(S.saveProf[k] ? 'on' : '', fmt(saveBonus(k)), n)).join('');
   const skills = SKILLS.map(([key, n, ab]) => li(['', 'on', 'ex'][S.skills[key] || 0], fmt(skillBonus(key)), n + ' <i>' + ab + '</i>')).join('');
   const atk = S.attacks.length
@@ -1577,12 +1735,8 @@ function buildPrintable(){
   }
   if (S.spellAbility || slotBits.length){
     let head = '';
-    if (S.spellAbility){ const m = num(S.mods[S.spellAbility]); head = '<p>Ability ' + S.spellAbility.toUpperCase() + '. Save DC <b>' + (8 + p + m) + '</b>. Attack <b>' + fmt(p + m) + '</b>.</p>'; }
+    if (S.spellAbility || man()){ head = '<p>' + (S.spellAbility ? 'Ability ' + S.spellAbility.toUpperCase() + '. ' : '') + 'Save DC <b>' + spellDcTotal() + '</b>. Attack <b>' + fmt(spellAtkTotal()) + '</b>.</p>'; }
     spell = '<h2>Spellcasting</h2>' + head + slotBits.join('');
-  }
-  const ORDW = ['Cantrip','1st level','2nd level','3rd level','4th level','5th level','6th level','7th level','8th level','9th level'];
-  if (S.spells.length){
-    spell += '<h2>Spells</h2><ul>' + S.spells.map(sp => '<li><b>' + esc(sp.name || 'Spell') + '</b> &nbsp;<i>' + ORDW[sp.level || 0] + (sp.prepared ? ', prepared' : '') + '</i></li>').join('') + '</ul>';
   }
   const coins = ['pp', 'gp', 'ep', 'sp', 'cp'].filter(k => S.currency[k]).map(k => esc(S.currency[k]) + ' ' + k).join(', ');
   const css = 'body{font:14px/1.45 Georgia,"Times New Roman",serif;color:#111;margin:24px auto;max-width:860px;padding:0 16px}' +
@@ -1602,7 +1756,7 @@ function buildPrintable(){
     '<h1>' + esc(S.name || 'Unnamed character') + '</h1><div class="sub">' + esc(identLine()) + '</div>' +
     '<div class="stats"><div class="st"><b>' + esc(S.ac) + '</b><span>Armor class</span></div><div class="st"><b>' + fmt(initTotal()) + '</b><span>Initiative</span></div>' +
     '<div class="st"><b>' + esc(S.speed) + '</b><span>Speed</span></div><div class="st"><b>' + esc(S.hp.cur) + '/' + esc(S.hp.max) + '</b><span>Hit points' + (S.hp.temp ? ' (+' + esc(S.hp.temp) + ')' : '') + '</span></div>' +
-    '<div class="st"><b>' + fmt(p) + '</b><span>Proficiency</span></div><div class="st"><b>' + (10 + skillBonus('perception')) + '</b><span>Passive Perception</span></div>' +
+    '<div class="st"><b>' + fmt(p) + '</b><span>Proficiency</span></div><div class="st"><b>' + (passiveTotal()) + '</b><span>Passive Perception</span></div>' +
     (S.hitDice ? '<div class="st"><b>' + esc(S.hitDice) + '</b><span>Hit dice</span></div>' : '') + '</div>' +
     '<div class="grid"><div>' + abil + '</div>' +
     '<div><h2 style="margin-top:0">Saving throws</h2><ul>' + saves + '</ul><h2>Skills</h2><ul>' + skills + '</ul></div>' +
@@ -1613,9 +1767,9 @@ function buildPrintable(){
 }
 
 const KINDS = {
-  data:{label:'Data file (.txt)', desc:'Everything on your sheet plus your look settings, saved as a plain text file. Load it back any time, on any device, with Choose a file below.', build:buildJSON, file:() => slug() + '.txt', mime:'text/plain'},
-  sheet:{label:'Printable sheet', desc:'A clean sheet with every number worked out. Open the downloaded file in a browser, then print it or save it as a PDF.', build:buildPrintable, file:() => slug() + '-sheet.html', mime:'text/html'},
-  text:{label:'Text summary (.txt)', desc:'A readable summary you can paste into notes, a chat, or a wiki. To reload your sheet later, use the data file instead.', build:buildMarkdown, file:() => slug() + '-summary.txt', mime:'text/plain'}
+  data:{label:'Data file (.txt)', desc:'Everything on your sheet plus your look settings, saved as a plain text file. Load it back any time, on any device, with Choose a file below.', build:buildJSON, file:() => slug() + '.txt'},
+  sheet:{label:'Printable sheet', desc:'A clean sheet with every number worked out. Open the downloaded file in a browser, then print it or save it as a PDF.', build:buildPrintable, file:() => slug() + '-sheet.html'},
+  text:{label:'Text summary (.txt)', desc:'A readable summary you can paste into notes, a chat, or a wiki. To reload your sheet later, use the data file instead.', build:buildMarkdown, file:() => slug() + '-summary.txt'}
 };
 let expKind = 'data';
 let DL = null;
@@ -1626,40 +1780,23 @@ function renderExport(){
   $('#expDesc').textContent = k.desc;
   $('#exportText').value = k.build();
   $$('#expKinds button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === expKind)));
-  $('#expDownload').disabled = false;
-  dlgSay('');
+  $('#expDownload').disabled = !DL;
+  dlgSay(DL ? '' : 'Downloads are not available in this view. Use Copy instead.');
 }
 async function copyText(text, ta){
   try { await navigator.clipboard.writeText(text); return true; } catch(e) {}
   try { ta.focus(); ta.select(); return document.execCommand('copy'); } catch(e) { return false; }
 }
-function browserDownload(filename, data, mime){
-  try {
-    const blob = new Blob([data], {type:(mime || 'text/plain') + ';charset=utf-8'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = filename; a.style.display = 'none';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    setTimeout(() => URL.revokeObjectURL(url), 2000);
-    return true;
-  } catch(e) { return false; }
-}
 async function doDownload(){
+  if (!DL) return;
   const k = KINDS[expKind], name = k.file();
-  if (DL){
-    try {
-      await DL.save({filename:name, data:k.build()});
-      dlgSay('Saved ' + name + '.');
-      return;
-    } catch(e) {
-      if (e && e.code === 'declined'){ dlgSay('Download cancelled.'); return; }
-      /* fall through and try a plain browser download instead */
-    }
+  try {
+    await DL.save({filename:name, data:k.build()});
+    dlgSay('Saved ' + name + '.');
+  } catch(e) {
+    if (e && e.code === 'declined') dlgSay('Download cancelled.');
+    else dlgSay('The download did not go through. Try Copy instead.');
   }
-  if (browserDownload(name, k.build(), k.mime)) dlgSay('Downloaded ' + name + '.');
-  else dlgSay('The download did not go through. Try Copy instead.');
 }
 function doPrint(){
   closeDlg($('#exportDlg'));
@@ -1669,7 +1806,7 @@ function doPrint(){
 }
 function replaceState(next){
   S = next;
-  syncInputs(); renderAttacks(); renderSpells(); renderDeath(); renderSlots(); update(); save();
+  syncInputs(); renderAttacks(); renderDeath(); renderSlots(); update(); save();
 }
 function applyImport(text){
   const obj = JSON.parse(String(text).replace(/^\uFEFF/, '').trim());
@@ -1756,6 +1893,46 @@ function initCapabilities(){
   } catch(e) {}
 }
 
+/* ---------- manual stats: type numbers yourself, no math ---------- */
+const manIns = [];
+function manInput(after, get, set, label, replace){
+  const inp = h('input', {class:'man-in', type:'number', inputmode:'numeric', 'aria-label':label, oninput:e => { set(num(e.target.value)); update(); save(); }});
+  after.insertAdjacentElement('afterend', inp);
+  manIns.push({el:inp, get});
+  if (replace) after.classList.add('hide-man');
+}
+function syncMan(){
+  document.documentElement.classList.toggle('manual', !!S.manual);
+  const b = $('#manualBtn'); if (!b) return;
+  b.setAttribute('aria-pressed', S.manual ? 'true' : 'false');
+  b.textContent = 'Manual stats: ' + (S.manual ? 'On' : 'Off');
+  manIns.forEach(x => { if (document.activeElement !== x.el) x.el.value = x.get(); });
+  ovIns.forEach(x => { x.rst.hidden = man() || !S.modOn[x.k]; });
+}
+function toggleManual(){
+  if (!S.manual && !S.manInit){
+    ABILITIES.forEach(([k]) => { S.man.mod[k] = abMod(k); S.man.save[k] = saveBonus(k); });
+    SKILLS.forEach(([k]) => { S.man.skill[k] = skillBonus(k); });
+    S.man.init = initTotal(); S.man.prof = prof(); S.man.passive = passiveTotal();
+    if (S.spellAbility && S.abilities[S.spellAbility] != null){ S.man.spellDc = spellDcTotal(); S.man.spellAtk = spellAtkTotal(); }
+    S.attacks.forEach(a => { a.hit = toHit(a); });
+    S.manInit = true;
+  }
+  S.manual = !S.manual;
+  renderAttacks(); update(); save();
+  say(S.manual ? 'Manual stats on. Type your own numbers.' : 'Manual stats off. Numbers are calculated again.');
+}
+function initManual(){
+  ABILITIES.forEach(([k, n]) => manInput(saveEls[k].rb, () => S.man.save[k], v => { S.man.save[k] = v; }, n + ' save bonus'));
+  SKILLS.forEach(([k, n]) => manInput(skillEls[k].rb, () => S.man.skill[k], v => { S.man.skill[k] = v; }, n + ' bonus'));
+  manInput($('#initBtn'), () => S.man.init, v => { S.man.init = v; }, 'Initiative bonus');
+  manInput($('#profBonus'), () => S.man.prof, v => { S.man.prof = v; }, 'Proficiency bonus', true);
+  manInput($('#passive'), () => S.man.passive, v => { S.man.passive = v; }, 'Passive Perception', true);
+  manInput($('#spellDc'), () => S.man.spellDc, v => { S.man.spellDc = v; }, 'Spell save DC', true);
+  manInput($('#spellAtk'), () => S.man.spellAtk, v => { S.man.spellAtk = v; }, 'Spell attack bonus');
+  $('#manualBtn').addEventListener('click', toggleManual);
+}
+
 /* ---------- init ---------- */
 buildAbilities();
 buildSaves();
@@ -1765,16 +1942,16 @@ bindInputs();
 renderAttacks();
 renderDeath();
 renderSlots();
-renderSpells();
 buildTray();
 initSections();
 buildCustomize();
 initExport();
+initManual();
 
 $('#initBtn').addEventListener('click', () => finish(rollD20('Initiative', initTotal())));
 $('#spellAtk').addEventListener('click', () => {
-  const sa = S.spellAbility; if (!sa) return;
-  finish(rollD20('Spell attack', prof() + num(S.mods[sa])));
+  if (!man() && !S.spellAbility) return;
+  finish(rollD20('Spell attack', spellAtkTotal()));
 });
 $('#deathRoll').addEventListener('click', rollDeathSave);
 $('#hurtBtn').addEventListener('click', () => { damage(num($('#hpAmt').value)); $('#hpAmt').value = ''; });
@@ -1783,30 +1960,10 @@ $('#mbMinus').addEventListener('click', () => damage(1));
 $('#mbPlus').addEventListener('click', () => heal(1));
 $('#longRest').addEventListener('click', longRest);
 $('#inspBtn').addEventListener('click', () => { S.inspiration = !S.inspiration; update(); save(); });
-(function initProfEdit(){
-  const el = $('#profBonus');
-  el.value = fmt(num(S.prof));
-  el.addEventListener('focus', () => { el.select(); });
-  el.addEventListener('input', () => {
-    const raw = el.value.replace(/\u2212/g, '-').trim();
-    if (raw === '' || raw === '-' || raw === '+') return;
-    const n = parseInt(raw, 10);
-    if (isNaN(n)) return;
-    S.prof = clamp(n, -99, 99);
-    update(); save();
-  });
-  el.addEventListener('blur', () => { el.value = fmt(num(S.prof)); });
-  el.addEventListener('keydown', e => { if (e.key === 'Enter') el.blur(); });
-})();
 $('#addAtk').addEventListener('click', () => {
   S.attacks.push({name:'', ability:'str', prof:true, bonus:0, dmg:''});
   renderAttacks(); update(); save();
   const inputs = $$('.atk-name'); if (inputs.length) inputs[inputs.length - 1].focus();
-});
-$('#addSpell').addEventListener('click', () => {
-  S.spells.push({name:'', level:0, prepared:false});
-  renderSpells(); save();
-  const inputs = $$('.spell-name'); if (inputs.length) inputs[inputs.length - 1].focus();
 });
 $$('.seg [data-mode]').forEach(b => b.addEventListener('click', () => setMode(b.dataset.mode)));
 $('#modeCycle').addEventListener('click', () => setMode(MODE_ORDER[(MODE_ORDER.indexOf(MODE) + 1) % 3]));
@@ -1825,6 +1982,397 @@ update();
 setView('sheet');
 window.scrollTo(0, 0);
 setTimeout(initCapabilities, 0);
+window.__sheetBridge = { sheet: () => S, onRoll: null };
+})();
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<div class="dm" id="dm" hidden>
+ <div class="dm-in">
+  <div class="dm-top">
+   <h2 id="dmTitle">Party room</h2>
+   <div class="row" style="align-items:center">
+    <span class="dm-code" id="dmCode" hidden></span>
+    <button type="button" class="btn small" id="dmLeave" hidden>Leave room</button>
+    <button type="button" class="btn small" id="dmClose">Back to sheet</button>
+   </div>
+  </div>
+  <div class="dm-lobby" id="dmLobby">
+   <div class="dm-card"><h3>Run the game (DM)</h3><p>Creates a room with a number code and gives you the dungeon screen.</p><button type="button" class="btn primary" id="dmHost">Create room</button></div>
+   <div class="dm-card"><h3>Join as a player</h3><p>Enter the code your DM gave you. Joining lets the DM see your HP, AC, rolls and, if they open it, your character sheet.</p><input id="dmJoinCode" inputmode="numeric" maxlength="6" placeholder="000000" aria-label="Room code"><button type="button" class="btn" id="dmJoin">Join room</button></div>
+   <p class="dm-msg" id="dmMsg" role="status" style="grid-column:1/-1"></p>
+  </div>
+  <div class="dm-body" id="dmBody" hidden>
+   <div><div class="dm-grid" id="dmGrid" aria-label="Dungeon map"></div><p class="dm-help" id="dmHelp"></p></div>
+   <div class="dm-side">
+    <div class="dm-box" id="dmToolBox" hidden><h3>Dungeon tools</h3><div class="dm-tools" id="dmTools"></div>
+     <input class="line" id="dmMon" placeholder="Monster name" maxlength="16" style="margin-top:8px;width:100%" aria-label="Monster name">
+     <div class="dm-tools" style="margin-top:8px"><button type="button" class="btn small" id="dmRevAll">Reveal all</button><button type="button" class="btn small" id="dmHideAll">Hide all</button><button type="button" class="btn small" id="dmClear">Clear map</button></div></div>
+    <div class="dm-box" id="dmMapBox" hidden><h3>Map size and image</h3>
+     <div class="dm-size"><label>Width<input id="dmW" type="number" min="4" max="30"></label><label>Height<input id="dmH" type="number" min="4" max="24"></label><button type="button" class="btn small" id="dmSize">Apply</button></div>
+     <div class="dm-tools" style="margin-top:8px"><button type="button" class="btn small" id="dmBgBtn">Add background image</button><button type="button" class="btn small" id="dmBgDel">Remove image</button><input type="file" id="dmBgFile" accept="image/*" hidden></div></div>
+    <div class="dm-box" id="dmSlideBox" hidden><h3>Slides</h3><ul class="dm-slides" id="dmSlides"></ul>
+     <input class="line" id="dmSlName" maxlength="30" aria-label="Slide name" style="width:100%;margin-top:8px">
+     <div class="dm-tools" style="margin-top:8px"><button type="button" class="btn small" id="dmSlNew">New</button><button type="button" class="btn small" id="dmSlDup">Duplicate</button><button type="button" class="btn small" id="dmSlDel">Delete</button><button type="button" class="btn small" id="dmSlExp">Export</button><button type="button" class="btn small" id="dmSlImp">Import</button><input type="file" id="dmSlFile" accept="application/json,.json" hidden></div>
+     <p class="dm-help">Players see the slide you select. Slides save automatically in this browser; export for a backup.</p></div>
+    <div class="dm-box"><h3>Party</h3><ul class="dm-party" id="dmParty"></ul></div>
+    <div class="dm-box"><h3>Rolls</h3><ul class="dm-feed" id="dmFeed"><li>No rolls yet.</li></ul></div>
+   </div>
+  </div>
+ </div>
+</div>
+<div class="dm-sheet" id="dmSheet" hidden><div class="dm-sheet-in" id="dmSheetIn"></div></div>
+<script>
+(function(){
+const KEY='dnd-dm-slides-v1',OLD='dnd-dm-map-v1',MAXW=30,MAXH=24,CH=2800;
+const $=s=>document.querySelector(s);
+const el=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e};
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const uid=()=>Math.random().toString(36).slice(2,10);
+const IMGRE=/^data:image\/jpeg;base64,[A-Za-z0-9+\/=]+$/;
+const newSlide=(name,w=14,h=10)=>({id:uid(),name,w,h,t:'_'.repeat(w*h),f:'1'.repeat(w*h),m:[],bg:'',bgId:''});
+const TOOLS=[['.','Floor'],['#','Wall'],['D','Door'],['~','Water'],['_','Erase'],['show','Reveal'],['hide','Fog'],['mon','Monster'],['del','Remove']];
+const ABIL=[['str','STR'],['dex','DEX'],['con','CON'],['int','INT'],['wis','WIS'],['cha','CHA']];
+const SKILLS=[['acrobatics','Acrobatics','dex'],['animal','Animal Handling','wis'],['arcana','Arcana','int'],['athletics','Athletics','str'],['deception','Deception','cha'],['history','History','int'],['insight','Insight','wis'],['intimidation','Intimidation','cha'],['investigation','Investigation','int'],['medicine','Medicine','wis'],['nature','Nature','int'],['perception','Perception','wis'],['performance','Performance','cha'],['persuasion','Persuasion','cha'],['religion','Religion','int'],['sleight','Sleight of Hand','dex'],['stealth','Stealth','dex'],['survival','Survival','wis']];
+let room=null,role=null,deck=null,map=newSlide(''),gotMap=false,tool='.',peers=[],feed=[],cells=[],lastP='',timers=[],imgs={},asm={},pending={},lastBg={},delArmed=false,saveT;
+const say=m=>{$('#dmMsg').textContent=m||''};
+const colorOf=s=>{let h=0;for(const c of String(s))h=(h*31+c.charCodeAt(0))%360;return 'hsl('+h+',55%,38%)'};
+const myPeer=()=>{const p=peers.find(x=>x.isMe);return p?p.peer:null};
+const isDmPeer=id=>{const p=peers.find(x=>x.peer===id);return !!(p&&p.presence&&p.presence.role==='dm')};
+const setStr=(s,i,c)=>s.slice(0,i)+c+s.slice(i+1);
+function validMap(m){
+  if(!m||typeof m!=='object')return false;const{w,h}=m;
+  if(!Number.isInteger(w)||!Number.isInteger(h)||w<4||h<4||w>MAXW||h>MAXH)return false;
+  if(typeof m.t!=='string'||typeof m.f!=='string'||m.t.length!==w*h||m.f.length!==w*h)return false;
+  if(!Array.isArray(m.m)||m.m.length>12)return false;
+  return m.m.every(o=>o&&Number.isInteger(o.x)&&Number.isInteger(o.y)&&o.x>=0&&o.x<w&&o.y>=0&&o.y<h&&typeof o.n==='string');
+}
+const wire=m=>({id:m.id,w:m.w,h:m.h,t:m.t,f:m.f,m:m.m,b:m.bgId||''});
+function sheet(){const b=window.__sheetBridge;return b?b.sheet():null}
+function myPresence(){
+  const S=sheet();if(!S)return{role};
+  return{role,name:String(S.name||'Adventurer').slice(0,24),cls:String(S.cls||'').slice(0,20),lvl:S.level|0,hp:S.hp.cur|0,max:S.hp.max|0,ac:S.ac|0};
+}
+function pushPresence(force){
+  if(!room)return;const p=myPresence(),j=JSON.stringify(p);
+  if(!force&&j===lastP)return;lastP=j;room.presence(p).catch(()=>{});
+}
+/* ---- grid ---- */
+function buildCells(){
+  const g=$('#dmGrid');g.textContent='';cells=[];
+  for(let i=0;i<map.w*map.h;i++){const c=el('div','dm-c');c.dataset.i=i;g.append(c);cells.push(c)}
+}
+function draw(){
+  const dm=role==='dm',W=map.w,H=map.h,g=$('#dmGrid'),toks={};
+  if(cells.length!==W*H)buildCells();
+  g.style.gridTemplateColumns='repeat('+W+',minmax(0,1fr))';
+  const img=dm?map.bg:imgs[map.b];
+  g.classList.toggle('hasbg',!!img);g.style.backgroundImage=img?'url("'+img+'")':'';
+  peers.forEach(p=>{const q=p.presence;if(q&&q.role==='player'&&Number.isInteger(q.x)&&Number.isInteger(q.y)&&q.x>=0&&q.x<W&&q.y>=0&&q.y<H){const i=q.y*W+q.x;toks[i]=toks[i]||{n:q.name||'?',c:colorOf(p.peer),me:p.isMe}}});
+  map.m.forEach(m=>{const i=m.y*W+m.x;if(!toks[i])toks[i]={n:m.n,c:'#8a1c2c'}});
+  cells.forEach((c,i)=>{
+    const hidden=map.f[i]!=='1',t='._#D~'.includes(map.t[i])?map.t[i]:'_';
+    c.dataset.t=t;c.className='dm-c'+(hidden?(dm?' dmfog':' fog'):'');c.textContent='';
+    const k=toks[i];
+    if(k&&(dm||!hidden)){const e=el('div','dm-tok'+(k.me?' me':''),(k.n||'?').charAt(0).toUpperCase());e.style.background=k.c;c.title=k.n;c.append(e)}else c.removeAttribute('title');
+  });
+}
+function act(i){
+  const W=map.w,x=i%W,y=(i/W)|0;
+  if(role==='dm'){
+    if(tool.length===1)map.t=setStr(map.t,i,tool);
+    else if(tool==='show')map.f=setStr(map.f,i,'1');
+    else if(tool==='hide')map.f=setStr(map.f,i,'0');
+    else if(tool==='mon'){if(map.m.length>=12){say('Up to 12 monsters.');return}map.m.push({x,y,n:($('#dmMon').value.trim()||'Monster').slice(0,16)})}
+    else if(tool==='del')map.m=map.m.filter(m=>!(m.x===x&&m.y===y));
+    changed();
+  }else if(room&&gotMap&&map.f[i]==='1'&&map.t[i]!=='#'&&(map.t[i]!=='_'||imgs[map.b])){
+    room.presence({x,y}).catch(()=>{});
+  }
+}
+/* ---- party, feed ---- */
+function renderParty(){
+  const ul=$('#dmParty');ul.textContent='';
+  if(!peers.length){ul.append(el('li',null,'Just you so far.'));return}
+  peers.forEach(p=>{
+    const q=p.presence||{};const li=el('li');
+    if(q.role==='dm'){li.append(el('b',null,'Dungeon Master'+(p.isMe?' (you)':'')));ul.append(li);return}
+    li.append(el('b',null,(q.name||'Player')+(p.isMe?' (you)':'')));
+    li.append(el('span',null,'  '+[q.cls,q.lvl?'lvl '+q.lvl:''].filter(Boolean).join(' ')));
+    li.append(el('div',null,'HP '+(q.hp??'?')+'/'+(q.max??'?')+'  ·  AC '+(q.ac??'?')));
+    const bar=el('div','hpbar'),f=el('i');f.style.width=(q.max>0?Math.max(0,Math.min(100,q.hp/q.max*100)):0)+'%';bar.append(f);li.append(bar);
+    if(role==='dm'&&!p.isMe){const b=el('button','btn small','View sheet');b.type='button';b.addEventListener('click',()=>reqSheet(p.peer));li.append(b)}
+    ul.append(li);
+  });
+}
+function renderFeed(){
+  const ul=$('#dmFeed');ul.textContent='';
+  if(!feed.length){ul.append(el('li',null,'No rolls yet.'));return}
+  feed.forEach(r=>{const li=el('li');li.append(el('b',null,r.t+' '));li.append(el('span',null,(r.n||'?')+': '+r.l+(r.tag?(r.tag==='crit'?' (nat 20)':' (nat 1)'):'')));ul.append(li)});
+}
+/* ---- blobs (images and sheets travel as small chunks) ---- */
+async function sendBlob(kind,id,str,to){
+  const n=Math.ceil(str.length/CH);
+  for(let i=0;i<n;i++){if(!room)return;await room.emit('blob',{k:kind,id,i,n,to:to||'',d:str.slice(i*CH,(i+1)*CH)}).catch(()=>{});await sleep(35)}
+}
+function onBlob(m){
+  const d=m.data;if(!d||typeof d!=='object')return;
+  const{k,id,i,n}=d;
+  if((k!=='bg'&&k!=='sheet')||typeof id!=='string'||id.length>24||!Number.isInteger(i)||!Number.isInteger(n)||n<1||n>60||i<0||i>=n||typeof d.d!=='string'||d.d.length>3000)return;
+  if(d.to&&d.to!==myPeer())return;
+  if(k==='bg'){if(role==='dm'||!isDmPeer(m.peer))return}
+  else if(role!=='dm'||pending[id]!==m.peer)return;
+  const key=k+id;
+  if(!asm[key]){if(Object.keys(asm).length>6)asm={};asm[key]={n,p:new Array(n),c:0}}
+  const a=asm[key];if(a.n!==n)return;
+  if(a.p[i]===undefined){a.p[i]=d.d;a.c++}
+  if(a.c<n)return;
+  delete asm[key];const s=a.p.join('');
+  if(k==='bg'){
+    if(!IMGRE.test(s)||s.length>130000)return;
+    if(Object.keys(imgs).length>5)imgs={};imgs[id]=s;if(map.b===id)draw();
+  }else{
+    delete pending[id];
+    try{showSheet(JSON.parse(decodeURIComponent(escape(atob(s)))))}catch(e){say('Couldn’t read that sheet.')}
+  }
+}
+function sendBg(force){
+  if(!room||role!=='dm'||!map.bg||!map.bgId)return;
+  const now=Date.now();if(!force&&now-(lastBg[map.bgId]||0)<4000)return;
+  lastBg[map.bgId]=now;sendBlob('bg',map.bgId,map.bg);
+}
+function reqSheet(peerId){
+  if(!room)return;const id=uid();pending[id]=peerId;
+  room.emit('sheetreq',{id,to:peerId}).catch(()=>{});
+  setTimeout(()=>{if(pending[id]){delete pending[id];$('#dmHelp').textContent='That player didn’t answer. Try again.'}},9000);
+  $('#dmHelp').textContent='Asking for the sheet…';
+}
+function onSheetReq(m){
+  const d=m.data;if(!d||role!=='player'||typeof d.id!=='string'||d.to!==myPeer()||!isDmPeer(m.peer))return;
+  const S=sheet();if(!S)return;
+  sendBlob('sheet',d.id,btoa(unescape(encodeURIComponent(JSON.stringify(S)))),m.peer);
+}
+/* ---- sheet viewer (DM) ---- */
+function showSheet(S){
+  if(!S||typeof S!=='object')return;
+  $('#dmHelp').textContent='';
+  const mod=v=>Math.floor(((parseInt(v,10)||0)-10)/2),fmt=n=>(n<0?'\u2212':'+')+Math.abs(n);
+  const M=S.manual&&S.man&&typeof S.man==='object'?S.man:null,nn=v=>parseInt(v,10)||0,lvl=Math.min(20,Math.max(1,parseInt(S.level,10)||1)),pb=M?nn(M.prof):2+Math.floor((lvl-1)/4);
+  const abM=k=>M?nn((M.mod||{})[k]):(S.modOn&&S.modOn[k]?nn((S.modVal||{})[k]):mod(ab[k])),svM=k=>M?nn((M.save||{})[k]):abM(k)+(sp[k]?pb:0),skM=(k,a,r)=>M?nn((M.skill||{})[k]):abM(a)+pb*r;
+  const ab=S.abilities||{},sp=S.saveProf||{},sk=S.skills||{},hp=S.hp||{},T=v=>String(v==null?'':v).slice(0,4000);
+  const box=$('#dmSheetIn');box.textContent='';
+  const pill=(l,v)=>{const p=el('div','sh-pill');p.append(el('span',null,l),el('b',null,v));return p};
+  const sec=(t,node)=>{const s=el('div');s.append(el('h3',null,t),node);box.append(s)};
+  const top=el('div');top.append(el('h2',null,T(S.name)||'Unnamed character'));top.firstChild.style.cssText='margin:0;font:700 1.6rem var(--serif);font-style:normal';
+  top.append(el('div',null,[T(S.cls),'level '+lvl,T(S.species),T(S.background)].filter(Boolean).join(' · ')));
+  const cb=el('button','btn small','Close');cb.type='button';cb.addEventListener('click',()=>{$('#dmSheet').hidden=true});cb.style.alignSelf='flex-start';
+  box.append(cb,top);
+  const g1=el('div','sh-grid');
+  g1.append(pill('Hit points',(parseInt(hp.cur,10)||0)+'/'+(parseInt(hp.max,10)||0)+(hp.temp?' +'+(parseInt(hp.temp,10)||0)+' temp':'')),pill('Armor class',parseInt(S.ac,10)||0),pill('Speed',(parseInt(S.speed,10)||0)+' ft'),pill('Initiative',fmt(M?nn(M.init):abM('dex')+nn(S.initBonus))),pill('Proficiency',fmt(pb)),pill('Passive Perc.',M?nn(M.passive):10+abM('wis')+pb*(sk.perception||0)),pill('Inspiration',S.inspiration?'Yes':'No'));
+  if(S.hitDice)g1.append(pill('Hit dice',T(S.hitDice).slice(0,20)));
+  sec('Vitals',g1);
+  const g2=el('div','sh-grid');
+  ABIL.forEach(([k,l])=>{const p=pill(l,String(parseInt(ab[k],10)||10));p.append(el('span',null,fmt(abM(k))+'  ·  save '+fmt(svM(k))+(sp[k]?' ●':'')));g2.append(p)});
+  sec('Abilities',g2);
+  const sl=el('div','sh-list');
+  SKILLS.forEach(([k,l,a])=>{const r=sk[k]||0;const d=el('div');d.append(el('span',null,(r?(r>1?'◆ ':'● '):'')+l),el('b',null,fmt(skM(k,a,r))));sl.append(d)});
+  sec('Skills (● proficient, ◆ expertise)',sl);
+  const atk=el('div','sh-list');
+  (Array.isArray(S.attacks)?S.attacks:[]).slice(0,20).forEach(a=>{if(!a||!a.name)return;const d=el('div');d.append(el('span',null,T(a.name).slice(0,40)),el('b',null,fmt(M?nn(a.hit):(a.ability?abM(a.ability):0)+(a.prof?pb:0)+nn(a.bonus))+(a.dmg?'  '+T(a.dmg).slice(0,30):'')));atk.append(d)});
+  if(atk.children.length)sec('Attacks',atk);
+  const slots=el('div','sh-list');
+  for(let i=1;i<=9;i++){const s=(S.slots||{})[i];if(s&&s.max>0){const d=el('div');d.append(el('span',null,'Level '+i),el('b',null,Math.max(0,s.max-s.used)+' left of '+s.max));slots.append(d)}}
+  if(M||(S.spellAbility&&ab[S.spellAbility]!=null)){const d=el('div');d.append(el('span',null,'Spell save DC / attack'),el('b',null,M?nn(M.spellDc)+' / '+fmt(nn(M.spellAtk)):(8+pb+abM(S.spellAbility))+' / '+fmt(pb+abM(S.spellAbility))));slots.append(d)}
+  if(slots.children.length)sec('Spellcasting',slots);
+  const c=S.currency||{},coins=['pp','gp','ep','sp','cp'].filter(k=>c[k]).map(k=>(parseInt(c[k],10)||0)+' '+k).join(', ');
+  if(coins)sec('Coins',el('div',null,coins));
+  if(S.features)sec('Features and spells',el('div','sh-text',T(S.features)));
+  if(S.gear)sec('Gear',el('div','sh-text',T(S.gear)));
+  $('#dmSheet').hidden=false;
+}
+/* ---- slides ---- */
+function persist(){
+  clearTimeout(saveT);
+  saveT=setTimeout(()=>{try{localStorage.setItem(KEY,JSON.stringify(deck))}catch(e){$('#dmHelp').textContent='Browser storage is full. Export your slides to keep them.'}},300);
+}
+function loadDeck(){
+  try{const d=JSON.parse(localStorage.getItem(KEY)||'null');if(d&&Array.isArray(d.slides)&&d.slides.length){d.slides=d.slides.filter(s=>validMap(s)&&typeof s.id==='string');if(d.slides.length){d.cur=Math.min(Math.max(0,d.cur|0),d.slides.length-1);return d}}}catch(e){}
+  const s=newSlide('Dungeon 1');
+  try{const o=JSON.parse(localStorage.getItem(OLD)||'null');if(o&&o.t&&o.t.length===140&&o.f&&o.f.length===140&&Array.isArray(o.m)){s.t=o.t;s.f=o.f;s.m=o.m.filter(m=>Number.isInteger(m.x)&&Number.isInteger(m.y)&&m.x<14&&m.y<10)}}catch(e){}
+  return{cur:0,slides:[s]};
+}
+function renderSlides(){
+  const ul=$('#dmSlides');ul.textContent='';
+  deck.slides.forEach((s,i)=>{const li=el('li'),b=el('button',null,s.name||('Slide '+(i+1)));b.type='button';if(i===deck.cur)b.setAttribute('aria-current','true');b.addEventListener('click',()=>pick(i));li.append(b);ul.append(li)});
+  $('#dmSlName').value=map.name||'';$('#dmW').value=map.w;$('#dmH').value=map.h;
+  delArmed=false;$('#dmSlDel').textContent='Delete';
+}
+function pick(i){
+  deck.cur=i;map=deck.slides[i];cells=[];persist();renderSlides();draw();sendMap();setTimeout(()=>sendBg(true),300);
+}
+function sendMap(){if(room&&role==='dm')room.emit('map',wire(map)).catch(()=>{})}
+function changed(){draw();persist();sendMap()}
+function resize(w,h){
+  w=Math.min(MAXW,Math.max(4,w|0||map.w));h=Math.min(MAXH,Math.max(4,h|0||map.h));
+  let t='',f='';
+  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const ok=x<map.w&&y<map.h,j=y*map.w+x;t+=ok?map.t[j]:'_';f+=ok?map.f[j]:'1'}
+  map.t=t;map.f=f;map.m=map.m.filter(m=>m.x<w&&m.y<h);map.w=w;map.h=h;cells=[];renderSlides();changed();
+}
+async function loadImg(file){
+  const url=URL.createObjectURL(file),im=new Image();
+  try{await new Promise((ok,no)=>{im.onload=ok;im.onerror=no;im.src=url})}finally{URL.revokeObjectURL(url)}
+  let sc=Math.min(1,900/Math.max(im.width,im.height));
+  for(let k=0;k<6;k++){
+    const c=document.createElement('canvas');c.width=Math.max(1,Math.round(im.width*sc));c.height=Math.max(1,Math.round(im.height*sc));
+    c.getContext('2d').drawImage(im,0,0,c.width,c.height);
+    for(const q of [.7,.55,.4]){const d=c.toDataURL('image/jpeg',q);if(d.length<=120000&&IMGRE.test(d))return{d,w:im.width,h:im.height}}
+    sc*=.75;
+  }
+  throw new Error('big');
+}
+async function setBg(file){
+  if(!file||!file.type.startsWith('image/')){$('#dmHelp').textContent='Pick an image file.';return}
+  try{
+    const r=await loadImg(file);map.bg=r.d;map.bgId=uid();
+    const w=map.w,h=Math.min(MAXH,Math.max(4,Math.round(w*r.h/r.w)));
+    resize(w,h);sendBg(true);$('#dmHelp').textContent='Image added. Grid height matched to the picture; change the size anytime.';
+  }catch(e){$('#dmHelp').textContent='Couldn’t use that image.'}
+}
+async function download(name,text){
+  let d=null;try{d=window.claude&&await window.claude.use('downloads')}catch(e){}
+  if(d){try{await d.save({filename:name,data:text})}catch(e){}return}
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type:'application/json'}));a.download=name;document.body.append(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500);
+}
+function importSlides(text){
+  try{
+    const o=JSON.parse(text);if(!o||o.app!=='dnd-dm-slides'||!Array.isArray(o.slides))throw 0;
+    let n=0;
+    o.slides.forEach(s=>{if(deck.slides.length>=40||!validMap(s))return;
+      const ok=s.bg&&typeof s.bg==='string'&&IMGRE.test(s.bg)&&s.bg.length<=130000;
+      deck.slides.push({id:uid(),name:String(s.name||'Imported').slice(0,30),w:s.w,h:s.h,t:s.t,f:s.f,m:s.m.map(m=>({x:m.x,y:m.y,n:m.n.slice(0,16)})),bg:ok?s.bg:'',bgId:ok?uid():''});n++});
+    if(!n)throw 0;
+    pick(deck.slides.length-n);$('#dmHelp').textContent='Imported '+n+' slide'+(n>1?'s':'')+'.';
+  }catch(e){$('#dmHelp').textContent='That file isn’t a slides export.'}
+}
+function buildTools(){
+  const box=$('#dmTools');box.textContent='';
+  TOOLS.forEach(([k,l])=>{const b=el('button','btn small',l);b.type='button';b.setAttribute('aria-pressed',String(k===tool));b.addEventListener('click',()=>{tool=k;[...box.children].forEach((x,j)=>x.setAttribute('aria-pressed',String(TOOLS[j][0]===k)))});box.append(b)});
+}
+/* ---- connect ---- */
+function makeP2P(){
+  return {join:(name,r)=>new Promise((resolve,reject)=>{
+    const hostId='dndroom'+name.slice(2),H={},PH=[],PS={},conns={};
+    let pres={},myId=null,prev=new Set(),peer=null,hc=null,done=false,L=[];
+    const mk=x=>({peer:x.id,isMe:x.id===myId,sameTab:x.id===myId,kind:'viewer',guest:false,by:null,presence:x.p||{},updatedAt:Date.now()});
+    const setList=l=>{L=l;const ps=l.map(mk),j=ps.filter(p=>!prev.has(p.peer));prev=new Set(l.map(x=>x.id));PH.forEach(f=>{try{f({peers:ps,joined:j,left:[],updated:[]})}catch(e){}})};
+    const deliver=(from,t,d)=>(H[t]||[]).slice().forEach(f=>{try{f({peer:from,isMe:from===myId,sameTab:from===myId,kind:'viewer',guest:false,by:null,topic:t,data:d})}catch(e){}});
+    const bc=o=>Object.values(conns).forEach(c=>{try{if(c.open)c.send(o)}catch(e){}});
+    const pushList=()=>{const l=[{id:myId,p:pres}].concat(Object.keys(PS).map(k=>({id:k,p:PS[k]})));setList(l);bc({k:'peers',l})};
+    const fail=e=>{if(!done){done=true;try{peer&&peer.destroy()}catch(_){}reject(e)}};
+    const api={
+      emit:async(t,d)=>{if(r==='dm'){deliver(myId,t,d);bc({k:'msg',from:myId,t,d})}else if(hc&&hc.open)hc.send({k:'emit',t,d})},
+      on:(t,f)=>{(H[t]=H[t]||[]).push(f);return()=>{H[t]=(H[t]||[]).filter(x=>x!==f)}},
+      presence:async patch=>{Object.keys(patch).forEach(k=>{if(patch[k]===null)delete pres[k];else pres[k]=patch[k]});if(r==='dm')pushList();else if(hc&&hc.open)hc.send({k:'pres',p:pres})},
+      peers:()=>L.map(mk),
+      onPeers:f=>{PH.push(f);return()=>{const i=PH.indexOf(f);if(i>=0)PH.splice(i,1)}},
+      connected:()=>true,onConnection:()=>()=>{},
+      leave:async()=>{try{peer&&peer.destroy()}catch(e){}}
+    };
+    try{
+      if(r==='dm'){
+        peer=new Peer(hostId);
+        peer.on('open',id=>{myId=id;done=true;resolve(api)});
+        peer.on('error',e=>fail(new Error(e&&e.type==='unavailable-id'?'taken':'net')));
+        peer.on('connection',c=>{
+          if(Object.keys(conns).length>=10){c.on('open',()=>c.close());return}
+          c.on('open',()=>{conns[c.peer]=c;PS[c.peer]={};pushList()});
+          c.on('data',d=>{if(!d||typeof d!=='object')return;
+            if(d.k==='pres'&&d.p&&typeof d.p==='object'&&JSON.stringify(d.p).length<2000){PS[c.peer]=d.p;pushList()}
+            else if(d.k==='emit'&&typeof d.t==='string'&&d.t.length<48){deliver(c.peer,d.t,d.d);bc({k:'msg',from:c.peer,t:d.t,d:d.d})}});
+          c.on('close',()=>{delete conns[c.peer];delete PS[c.peer];pushList()});
+        });
+      }else{
+        peer=new Peer();
+        peer.on('open',id=>{myId=id;hc=peer.connect(hostId,{reliable:true});
+          hc.on('open',()=>{if(!done){done=true;hc.send({k:'pres',p:pres});resolve(api)}});
+          hc.on('data',d=>{if(!d)return;if(d.k==='peers'&&Array.isArray(d.l))setList(d.l.slice(0,12));else if(d.k==='msg'&&typeof d.t==='string')deliver(d.from,d.t,d.d)});
+          hc.on('close',()=>setList([]));
+        });
+        peer.on('error',()=>fail(new Error('net')));
+        setTimeout(()=>fail(new Error('timeout')),12000);
+      }
+    }catch(e){fail(e)}
+  })};
+}
+
+async function enter(c,r,tries=0){
+  say('');
+  let api=null;
+  try{api=window.claude&&await window.claude.use('room')}catch(e){}
+  if(!api&&window.Peer)api=makeP2P();
+  if(!api){say('Couldn’t reach the room service. Check your internet connection.');return}
+  try{room=await api.join('dm'+c,r)}catch(e){room=null;if(e&&e.message==='taken'&&r==='dm'&&tries<3)return enter(newCode(),r,tries+1);say(r==='dm'?'Couldn’t create the room. Check your connection and try again.':'Couldn’t find that room. Check the code and that your DM has their room open.');return}
+  role=r;peers=[];feed=[];lastP='';imgs={};asm={};pending={};lastBg={};gotMap=false;cells=[];
+  if(r==='dm'){deck=loadDeck();map=deck.slides[deck.cur]}else map=newSlide('');
+  room.on('map',m=>{
+    if(role==='dm'||m.isMe||!isDmPeer(m.peer))return;const d=m.data;
+    if(!validMap(d)||typeof d.id!=='string'||d.id.length>16||typeof d.b!=='string'||d.b.length>16)return;
+    const was=map.id;map=d;gotMap=true;if(was!==d.id){cells=[];room.presence({x:null,y:null}).catch(()=>{})}
+    $('#dmHelp').textContent='Tap a lit floor tile to move your token. Your DM controls the map.';draw();
+  });
+  room.on('roll',m=>{const d=m.data;if(!d||typeof d!=='object')return;feed.unshift({n:String(d.n||'').slice(0,24),l:String(d.l||'').slice(0,40),t:String(d.t??'').slice(0,6),tag:d.tag==='crit'||d.tag==='fumble'?d.tag:''});feed.length=Math.min(feed.length,30);renderFeed()});
+  room.on('blob',onBlob);room.on('sheetreq',onSheetReq);
+  room.on('need',m=>{if(role==='dm'&&m.data&&m.data.id===map.bgId)sendBg(false)});
+  room.onPeers(ch=>{peers=ch.peers.slice();renderParty();draw();if(role==='dm'&&ch.joined.length){sendMap();setTimeout(()=>sendBg(false),500)}});
+  pushPresence(true);
+  timers.push(setInterval(()=>pushPresence(false),1500));
+  if(r==='dm'){sendMap();timers.push(setInterval(sendMap,6000))}
+  else timers.push(setInterval(()=>{if(map.b&&!imgs[map.b])room.emit('need',{id:map.b}).catch(()=>{})},3000));
+  $('#dmLobby').hidden=true;$('#dmBody').hidden=false;
+  ['#dmToolBox','#dmMapBox','#dmSlideBox'].forEach(s=>{$(s).hidden=r!=='dm'});
+  $('#dmCode').hidden=false;$('#dmCode').textContent=c;$('#dmLeave').hidden=false;
+  $('#dmTitle').textContent=r==='dm'?'Dungeon screen':'Dungeon';
+  $('#dmHelp').textContent=r==='dm'?'Players join with the code above. Paint tiles, hide areas with Fog, then Reveal them as the party explores.':'Waiting for the DM to show the map…';
+  buildTools();if(r==='dm')renderSlides();renderParty();renderFeed();draw();
+}
+function leave(){
+  timers.forEach(clearInterval);timers=[];
+  if(room)room.leave().catch(()=>{});room=null;role=null;peers=[];$('#dmSheet').hidden=true;
+  $('#dmLobby').hidden=false;$('#dmBody').hidden=true;$('#dmCode').hidden=true;$('#dmLeave').hidden=true;$('#dmTitle').textContent='Party room';
+}
+function newCode(){const a=new Uint32Array(1);crypto.getRandomValues(a);return String(100000+a[0]%900000)}
+const g=$('#dmGrid');
+g.addEventListener('pointerdown',e=>{const c=e.target.closest('.dm-c');if(c)act(+c.dataset.i)});
+g.addEventListener('pointerover',e=>{if(e.buttons&1&&role==='dm'&&e.pointerType==='mouse'&&tool!=='mon'){const c=e.target.closest('.dm-c');if(c)act(+c.dataset.i)}});
+$('#roomBtn').addEventListener('click',()=>{$('#dm').hidden=false;window.scrollTo(0,0)});
+$('#dmClose').addEventListener('click',()=>{$('#dm').hidden=true});
+$('#dmLeave').addEventListener('click',leave);
+$('#dmHost').addEventListener('click',()=>enter(newCode(),'dm'));
+$('#dmJoin').addEventListener('click',()=>{const c=$('#dmJoinCode').value.replace(/\D/g,'');if(c.length!==6){say('Enter the 6-digit code.');return}enter(c,'player')});
+$('#dmJoinCode').addEventListener('keydown',e=>{if(e.key==='Enter')$('#dmJoin').click()});
+$('#dmRevAll').addEventListener('click',()=>{map.f='1'.repeat(map.w*map.h);changed()});
+$('#dmHideAll').addEventListener('click',()=>{map.f='0'.repeat(map.w*map.h);changed()});
+$('#dmClear').addEventListener('click',()=>{map.t='_'.repeat(map.w*map.h);map.f='1'.repeat(map.w*map.h);map.m=[];changed()});
+$('#dmSize').addEventListener('click',()=>resize(parseInt($('#dmW').value,10),parseInt($('#dmH').value,10)));
+$('#dmBgBtn').addEventListener('click',()=>$('#dmBgFile').click());
+$('#dmBgFile').addEventListener('change',e=>{setBg(e.target.files[0]);e.target.value=''});
+$('#dmBgDel').addEventListener('click',()=>{map.bg='';map.bgId='';changed()});
+$('#dmSlName').addEventListener('input',e=>{map.name=e.target.value.slice(0,30);persist();const b=$('#dmSlides [aria-current]');if(b)b.textContent=map.name||('Slide '+(deck.cur+1))});
+$('#dmSlNew').addEventListener('click',()=>{if(deck.slides.length>=40){$('#dmHelp').textContent='Up to 40 slides.';return}deck.slides.push(newSlide('Dungeon '+(deck.slides.length+1)));pick(deck.slides.length-1)});
+$('#dmSlDup').addEventListener('click',()=>{if(deck.slides.length>=40)return;const c=JSON.parse(JSON.stringify(map));c.id=uid();c.name=(map.name||'Slide')+' copy';if(c.bg)c.bgId=uid();deck.slides.splice(deck.cur+1,0,c);pick(deck.cur+1)});
+$('#dmSlDel').addEventListener('click',()=>{
+  if(deck.slides.length<2){$('#dmHelp').textContent='Keep at least one slide.';return}
+  if(!delArmed){delArmed=true;$('#dmSlDel').textContent='Tap again to delete';return}
+  deck.slides.splice(deck.cur,1);pick(Math.min(deck.cur,deck.slides.length-1));
+});
+$('#dmSlExp').addEventListener('click',()=>download('dungeon-slides.json',JSON.stringify({app:'dnd-dm-slides',version:1,slides:deck.slides})));
+$('#dmSlImp').addEventListener('click',()=>$('#dmSlFile').click());
+$('#dmSlFile').addEventListener('change',e=>{const f=e.target.files[0];e.target.value='';if(f)f.text().then(importSlides)});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(!$('#dmSheet').hidden)$('#dmSheet').hidden=true;else if(!$('#dm').hidden)$('#dm').hidden=true}});
+const hook=()=>{const b=window.__sheetBridge;if(!b){setTimeout(hook,200);return}b.onRoll=res=>{
+  if(!room)return;const S=b.sheet();
+  room.emit('roll',{n:String(S.name||'Adventurer').slice(0,24),l:String(res.label||'Roll').slice(0,40),t:res.total,tag:res.tag||''}).catch(()=>{});
+}};hook();
 })();
 </script>
 </body>
