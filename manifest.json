@@ -12,13 +12,13 @@
   "theme_color": "#ffffff",
   "icons": [
     {
-      "src": "https://github.ioicon.png",
+      "src": "https://github.io/icon.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "https://github.ioicon.png",
+      "src": "https://github.io/icon.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
