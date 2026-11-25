@@ -4,21 +4,21 @@
   "description": "dnd sheet with dice and a online playing experience with friends",
   "lang": "en",
   "dir": "ltr",
-  "start_url": "./",
-  "scope": "./",
+  "start_url": "https://github.io",
+  "scope": "https://github.io",
   "display": "fullscreen",
   "orientation": "any",
   "background_color": "#ffffff",
   "theme_color": "#ffffff",
   "icons": [
     {
-      "src": "./icon.png",
+      "src": "https://github.ioicon.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "./icon.png",
+      "src": "https://github.ioicon.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
