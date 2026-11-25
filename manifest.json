@@ -1,26 +1,21 @@
 {
-  "background_color": "#ffffff",
-  "dir": "ltr",
-  "display": "fullscreen",
   "name": "Dnd sheet stuff",
-  "orientation": "any",
-  "scope": "/",
   "short_name": "Dnd",
-  "start_url": "/",
+  "description": "dnd sheet with dice and a online playing experience with friends",
+  "lang": "en",
+  "dir": "ltr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "any",
+  "background_color": "#ffffff",
   "theme_color": "#ffffff",
   "icons": [
     {
       "src": "https://flydurr.github.io/icon.png",
-      "isSquare": false,
-      "isPng": true,
-      "isWebp": false,
-      "isJpg": false,
-      "width": 0,
-      "is512x512": true,
-      "is256x256": false,
-      "is192x192": false
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
     }
-  ],
-  "lang": "en",
-  "description": "dnd sheet with dice and a online playing experience with friends"
+  ]
 }
